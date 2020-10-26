@@ -1,0 +1,13 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="@string/pref_key_version"
+        android:persistent="false"
+        android:title="@string/pref_tite_version"></Preference>
+
+    <Preference
+        android:key="@string/pref_key_copyright"
+        android:persistent="false"
+        android:summary="@string/summary_copyright"
+        android:title="@string/pref_tite_copyright"></Preference>
+</PreferenceScreen>

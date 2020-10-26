@@ -1,0 +1,32 @@
+<preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$BaseInfoPreferenceFragment"
+        android:icon="@drawable/ic_setting_info"
+        android:title="@string/info" />
+
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$LanguagePreferenceFragment"
+        android:icon="@drawable/ic_setting_language"
+        android:title="@string/language_speaker" />
+
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$NetworkPreferenceFragment"
+        android:icon="@drawable/ic_setting_network"
+        android:title="@string/config_network" />
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$WakePreferenceFragment"
+        android:icon="@drawable/ic_setting_wakeup"
+        android:title="@string/wakeup" />
+
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$NavPreferenceFragment"
+        android:icon="@drawable/ic_setting_map"
+        android:title="@string/nav" />
+
+    <header
+        android:fragment="com.chance.mimorobot.activity.SettingActivity$AboutPreferenceFragment"
+        android:icon="@drawable/ic_setting_about"
+        android:title="@string/about" />
+
+</preference-headers>

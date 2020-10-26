@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="@string/pref_key_robot_name"
+        android:title="@string/pref_title_info_robot_name"></EditTextPreference>
+
+    <Preference
+        android:key="@string/pref_key_robot_id"
+        android:title="@string/pref_title_info_robot_id"></Preference>
+
+
+    <Preference
+        android:key="@string/pref_key_robot_qrcode"
+        android:title="@string/pref_title_info_robot_qrcode"></Preference>
+
+</PreferenceScreen>

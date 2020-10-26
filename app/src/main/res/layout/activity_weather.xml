@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+   >
+
+    <LinearLayout
+        android:id="@+id/layout_weather_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="180dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv_weather_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_weather_real_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="50dp"
+            android:textColor="@color/white"
+            android:textSize="55dp"
+            tools:text="5" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="17dp"
+            android:text="℃"
+            android:textColor="@color/white"
+            android:textSize="35dp" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="26dp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="50dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/icon_weather_location" />
+
+        <TextView
+            android:id="@+id/tv_weather_city"
+            style="@style/TextViewStyle.WeatherTextView"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp"
+            tools:text="日照" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_weather_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_weather_top"
+        android:layout_marginLeft="300dp"
+        android:layout_marginTop="76dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_weather_temperature_range"
+            style="@style/TextViewStyle.WeatherTextView"
+            android:drawableLeft="@drawable/icon_weather_temperature"
+            android:drawablePadding="10dp"
+            android:layout_width="220dp"
+            tools:text="5~10℃" />
+
+        <TextView
+            android:id="@+id/tv_weather_wind"
+            style="@style/TextViewStyle.WeatherTextView"
+            android:drawableLeft="@drawable/icon_weather_wind"
+            android:drawablePadding="10dp"
+            tools:text="北风3~4级" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_weather_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_weather_middle"
+        android:layout_alignStart="@+id/layout_weather_middle"
+        android:layout_marginTop="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_weather_weather_condition"
+            style="@style/TextViewStyle.WeatherTextView"
+            android:drawableLeft="@drawable/icon_weather_weather"
+            android:drawablePadding="10dp"
+            android:layout_width="220dp"
+            tools:text="中雪" />
+
+        <TextView
+            android:id="@+id/tv_weather_air_condition"
+            style="@style/TextViewStyle.WeatherTextView"
+            android:drawableLeft="@drawable/icon_weather_air_condition"
+            android:drawablePadding="10dp"
+            tools:text="空气质量 良" />
+    </LinearLayout>
+</RelativeLayout>

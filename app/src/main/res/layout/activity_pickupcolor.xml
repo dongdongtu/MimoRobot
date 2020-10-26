@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dp"
+        android:layout_weight="1">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/identify_main_shape">
+            <com.chance.mimorobot.widget.ColorPickerView
+                android:id="@+id/cpv"
+                android:layout_width="500dp"
+                android:layout_height="500dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="50dp"
+                android:src="@drawable/pickup_color" />
+
+            <TextView
+                android:id="@+id/tv_text"
+                android:layout_toRightOf="@+id/cpv"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="50dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:textSize="30sp"
+                android:text="你选择的灯光颜色\n  "/>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

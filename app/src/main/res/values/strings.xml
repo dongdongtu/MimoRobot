@@ -1,0 +1,144 @@
+<resources>
+    <string name="app_name">MimoRobot</string>
+
+    <string name="open_the_serial_port">打开串口</string>
+    <string name="search_printer">搜索打印机</string>
+    <string name="test_printer">测试打印</string>
+    <string name="connecting1">连接中</string>
+    <string name="printer_connection_failure">打印机连接失败！</string>
+    <string name="app_stop">程序错误</string>
+    <string name="printer_out_of_paper">打印机缺纸</string>
+    <string name="connected">已连接</string>
+    <string name="unconnected">未连接</string>
+    <string name="printer_connected">打印机已连接</string>
+    <string name="connection_state">连接状态:</string>
+
+    <!--NormalPrint button  -->
+    <string name="printtext">打印文本</string>
+    <string name="printbarcode">打印条形码</string>
+    <string name="printqrcode">打印二维码</string>
+    <string name="printpicture">打印图 片</string>
+    <string name="printtestpage">打印测试页</string>
+    <string name="check_for_paper">检查是否有纸</string>
+    <string name="cuttall_paper">全切</string>
+    <string name="cutting_paper">半切纸</string>
+    <string name="queue_print">队列打印</string>
+    <!-- Toast -->
+    <string name="no_printed_pictures">没有打印的图片</string>
+    <string name="printer_have_paper">打印机有纸</string>
+    <string name="printer_does_not_have_paper">打印机没有纸</string>
+    <string name="successful_connection_printer">连接打印机成功</string>
+    <string name="printer_is_disconnected">打印机断开连接</string>
+
+
+
+    <string name="active_engine">激活引擎</string>
+    <string name="active_success">激活引擎成功</string>
+    <string name="already_activated">引擎已激活，无需再次激活</string>
+    <string name="active_failed">引擎激活失败，错误码为 %d</string>
+    <string name="library_not_found">未找到库文件，请检查是否有将.so文件放至工程的 app\\src\\main\\jniLibs 目录下</string>
+    <string name="switch_camera_failed">切换相机失败</string>
+    <string name="recognize_failed_notice">未通过:%s</string>
+    <string name="recognize_success_notice">通过:%s</string>
+    <string name="low_confidence_level">人脸置信度低</string>
+    <string name="specific_engine_init_failed">%s 初始化失败，错误码为:%d</string>
+    <string name="notice_change_detect_degree">相机已切换，若无法检测到人脸，需要在首页修改视频模式人脸检测角度</string>
+    <string name="liveness_detect">活体检测</string>
+    <string name="camera_rgb">RGB CAMERA</string>
+    <string name="camera_ir">IR CAMERA</string>
+    <string name="camera_rgb_preview_size">RGB CAMERA\n%dx%d</string>
+
+    <string name="init_failed">引擎初始化失败，错误码为 %d</string>
+
+
+    <string name="time_am">AM</string>
+    <string name="time_pm">PM</string>
+    <string name="time_colon">:</string>
+
+
+    <string name="play_time_start">00:00</string>
+
+
+    <string name="wifi_state">状态信息</string>
+    <string name="wifi_strength">信号强度</string>
+    <string name="wifi_speed">连接速度</string>
+    <string name="wifi_frequency">频率</string>
+    <string name="wifi_security">安全性</string>
+    <string name="disconnect">断开</string>
+    <string name="is_connected">已连接</string>
+    <string name="is_saved">已保存</string>
+    <string name="cancel_save">取消保存</string>
+
+
+
+    <string name="category_title_wakeup_setting">唤醒设置</string>
+    <string name="summary_wakerotate">语音唤醒时，机器人转向唤醒者</string>
+    <string name="summary_facewake">机器人通过人脸唤醒</string>
+    <string name="summary_irneed">需要机器人具备人体感应功能</string>
+
+
+    <string name="title_activity_settings">设  置</string>
+    <string name="version">版  本</string>
+    <string name="info">基本信息</string>
+    <string name="wakeup">唤  醒</string>
+    <string name="language_speaker">语音与语义</string>
+    <string name="config_network">配置网络</string>
+    <string name="about">关  于</string>
+
+    <string name="pref_title_info_robot_name">机器人名称</string>
+    <string name="pref_title_info_robot_id">机器人唯一标识</string>
+    <string name="pref_title_info_robot_qrcode">机器人二维码</string>
+
+    <string name="wake_turn">语音唤醒时转身</string>
+    <string name="speaker">发言人</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_key_robot_name">robot_name</string>
+    <string name="pref_key_robot_id">robot_id</string>
+    <string name="pref_key_robot_unit">robot_unit</string>
+    <string name="pref_key_robot_qrcode">robot_qrcode</string>
+
+    <string name="pref_key_language">language</string>
+    <string name="pref_key_asr_tts_length">asr_tts_length</string>
+    <string name="pref_key_speaker">speaker</string>
+    <string name="pref_key_tts_speed">tts_speed</string>
+    <string name="pref_key_tts_pitch">tts_pitch</string>
+    <string name="pref_key_tts_volume">tts_volume</string>
+
+    <string name="pref_key_config_network">config_network</string>
+
+    <string name="pref_key_wakeup_rotate">wakerotate</string>
+    <string name="pref_key_ir_wakeup">irwake</string>
+    <string name="pref_key_ir_hello">irhello</string>
+    <string name="pref_key_face_wakeup">facewake</string>
+    <string name="pref_key_wakeup_fixed_time">wakeup_fixed_time</string>
+    <string name="pref_key_wakeup_fixed_content">wakeup_fixed_content</string>
+
+
+    <string name="default_speaker_params">xiaoyan</string>
+    <string name="category_title_tts">语音合成</string>
+    <string name="tts_speed">语速</string>
+    <string name="tts_pitch">音调</string>
+
+
+    <string name="pref_title_config_network">机器人网络配置</string>
+    <string name="enter_config_network_ui">进入系统网络配置界面</string>
+
+    <string name="pref_key_copyright">copyright</string>
+    <string name="pref_key_version">version</string>
+
+    <string name="pref_tite_copyright">版权所有</string>
+    <string name="pref_tite_version">当前版本</string>
+    <string name="summary_copyright">奇捷智能机器人股份有限公司</string>
+    <string name="nav">导 航</string>
+    <string name="category_title_base_setting">基本设置</string>
+    <string name="pref_key_nav_speed">nav_speed</string>
+    <string name="nav_speed">导航速度</string>
+    <string name="category_title_autocharge">自动充电</string>
+    <string name="summary_nav_autocharge">配置机器人电量低于阈值时自动充电的开关</string>
+    <string name="pref_key_auto_charge">auto_charge</string>
+    <string name="auto_charge">低电量自动回充</string>
+    <string name="pref_key_auto_charge_value">auto_charge_value</string>
+    <string name="auto_charge_value">自动回充阈值(%)</string>
+
+</resources>

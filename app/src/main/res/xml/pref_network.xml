@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="@string/pref_key_config_network"
+        android:title="@string/pref_title_config_network"
+        android:summary="@string/enter_config_network_ui"></Preference>
+
+</PreferenceScreen>

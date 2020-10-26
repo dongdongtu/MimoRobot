@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+    <string-array name="levels">
+        <item>低</item>
+        <item>中</item>
+        <item>高</item>
+    </string-array>
+
+    <string-array name="levels_value">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="support_language">
+        <item>中文普通话</item>
+        <!--<item>英语</item>-->
+        <!--<item>粤语</item>-->
+        <!--<item>四川话</item>-->
+        <!--<item>上海话</item>-->
+        <!--<item>山东话</item>-->
+        <!--<item>河南话</item>-->
+    </string-array>
+
+    <string-array name="support_language_params">
+        <item>0</item>
+        <!--<item>1</item>-->
+        <!--<item>2</item>-->
+        <!--<item>3</item>-->
+        <!--<item>4</item>-->
+        <!--<item>5</item>-->
+        <!--<item>6</item>-->
+    </string-array>
+    <!-- 普通话的发言人-->
+    <string-array name="mandarin_speaker">
+        <item>小燕 - 青年女声 - 汉语</item>
+        <item>小宇 - 青年男声 - 汉语</item>
+        <item>小研 - 青年女声 - 汉语</item>
+        <item>小琪 - 青年女声 - 汉语</item>
+        <item>小峰 - 青年男声 - 汉语</item>
+        <item>小梅 - 青年女声 - 粤语</item>
+        <item>晓琳 - 青年女声 - 台湾普通话</item>
+        <item>小蓉 - 青年女声 - 四川话</item>
+        <item>小倩 - 青年女声 - 东北话</item>
+
+        <item>小坤 - 青年男声 - 河南话</item>
+        <item>小强 - 青年男声 - 湖南话</item>
+        <item>小莹 - 青年女声 - 陕西话</item>
+        <item>小新 - 童年男声 - 汉语</item>
+        <item>楠楠 - 童年女声 - 汉语</item>
+
+        <item>萌萌 - 童年女声 - 汉语</item>
+        <item>老孙 - 老年男声 - 汉语</item>
+    </string-array>
+
+    <!-- 普通话的发言人参数-->
+    <string-array name="mandarin_speaker_params">
+        <item>xiaoyan</item>
+        <item>xiaoyu</item>
+        <item>vixy</item>
+        <item>xiaoqi</item>
+        <item>vixf</item>
+        <item>xiaomei</item>
+        <item>xiaolin</item>
+        <item>xiaorong</item>
+        <item>xiaoqian</item>
+
+        <item>xiaokun</item>
+        <item>xiaoqiang</item>
+        <item>vixying</item>
+        <item>xiaoxin</item>
+        <item>nannan</item>
+
+        <item>mengmeng</item>
+        <item>vils</item>
+    </string-array>
+
+</resources>

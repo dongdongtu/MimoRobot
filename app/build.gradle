@@ -1,0 +1,142 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        applicationId "com.chance.mimorobot"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 2
+        versionName "1.0.1"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+        // 把Bugly的类放到主Dex
+        multiDexKeepProguard file("multidexKeep.pro")
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+        debug {
+            // 显示Log
+            buildConfigField("boolean", "LOG_DEBUG", "true")
+            // 测试服务器地址
+//            buildConfigField("String", "ROBOT_SERVER", "\"http://192.168.0.251:8080/czrobot/action/\"")
+//             发布服务器地址
+//            buildConfigField("String", "ROBOT_SERVER", "\"http://58.58.181.229:8082/czrobot/action/\"")
+//            buildConfigField("String", "ROBOT_SERVER", "\"http://appa.chuangze.cn:8083/action/\"")
+            // 测试版本手机客户端下载地址
+//            buildConfigField("String", "ROBOT_CLIENT_URL", "\"http://192.168.0.251:8082/czrobot/action/app/expeAppDownload\"")
+            versionNameSuffix "-d"
+            //混淆
+            minifyEnabled false
+            // 混淆文件配置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            // 不显示Log
+            buildConfigField("boolean", "LOG_DEBUG", "false")
+            // 发布服务器地址
+            // 发布版本手机客户端下载地址
+//            versionNameSuffix "-r"
+            //是否清理无用资源
+//            shrinkResources true
+//            //是否启用zipAlign压缩
+//            zipAlignEnabled true
+            //混淆
+            minifyEnabled false
+            //前一部分代表系统默认的android程序的混淆文件，该文件已经包含了基本的混淆声明，后一个文件是自己的定义混淆文件
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+//            signingConfig signingConfigs.release
+        }
+    }
+
+    greendao {
+        schemaVersion 4
+        daoPackage 'com.chance.mimorobot.db.dao'
+        targetGenDir 'src/main/java'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.aar'], dir: 'libs')
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation project(path: ':aiuilibrary')
+    implementation project(path: ':serial')
+    implementation rootProject.ext.dependencies.okhttp
+    implementation rootProject.ext.dependencies.okhttplogging
+    implementation rootProject.ext.dependencies.fastJson
+    implementation rootProject.ext.dependencies.gson
+    implementation rootProject.ext.dependencies.rxJava
+    implementation rootProject.ext.dependencies.rxAndroid
+    implementation rootProject.ext.dependencies.retrofit
+    implementation rootProject.ext.dependencies.retrofitconverter
+    implementation rootProject.ext.dependencies.retrofitadapter
+
+    //数据库框架
+    api rootProject.ext.dependencies.greendao
+
+    implementation rootProject.ext.dependencies.websocket
+    implementation rootProject.ext.dependencies.butterknife
+    annotationProcessor rootProject.ext.dependencies.butterknifeCompiler
+    //数据库框架
+    api rootProject.ext.dependencies.greendao
+    //加载网络图片
+    api rootProject.ext.dependencies.glide
+    api rootProject.ext.dependencies.glidetransformations
+    // 分包
+    api rootProject.ext.dependencies.multidex
+
+    implementation 'com.blankj:utilcode:1.15.0'
+//    // 视频缓存框架
+//    api rootProject.ext.dependencies.videocache
+//
+//    // 视频播放器
+//    api rootProject.ext.dependencies.videoview
+    //PhotoView
+    api rootProject.ext.dependencies.photoView
+
+    // eventbus
+    api rootProject.ext.dependencies.eventbus
+
+    // xupdate  版本更新框架
+    implementation rootProject.ext.dependencies.xUpdate
+    implementation rootProject.ext.dependencies.okhttputils
+
+    implementation rootProject.ext.dependencies.toasty
+
+    implementation rootProject.ext.dependencies.recyclerview
+    implementation rootProject.ext.dependencies.recyclerviewselection
+
+    // jsbridge
+    api rootProject.ext.dependencies.jsbridge
+
+    implementation 'me.wcy:lrcview:2.0.1'
+    implementation 'com.afollestad.material-dialogs:core:0.9.1.0'
+    implementation 'com.hlq:slideDeleteListView:1.0.0'
+
+    implementation 'com.shuyu:gsyVideoPlayer-java:7.1.6'
+
+//是否需要ExoPlayer模式
+    implementation 'com.shuyu:GSYVideoPlayer-exo2:7.1.6'
+
+//更多ijk的编码支持
+    implementation 'com.shuyu:gsyVideoPlayer-ex_so:7.1.6'
+
+    // 分包
+    api rootProject.ext.dependencies.multidex
+
+    implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.5@aar'
+
+}

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dp"
+        android:background="@drawable/identify_main_shape"
+        android:orientation="horizontal">
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5">
+            <TextView
+                android:id="@+id/tv_clear_map"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_marginTop="20dp"
+                android:textSize="30sp"
+                android:background="@drawable/btn_shape"
+                android:layout_marginLeft="70dp"
+                android:text="清除地图"/>
+
+            <TextView
+                android:id="@+id/tv_recover"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textSize="30sp"
+                android:layout_toRightOf="@+id/tv_clear_map"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/btn_shape"
+                android:layout_marginLeft="70dp"
+                android:text="重定位"/>
+            <com.chance.mimorobot.slam.mapview.MapView
+                android:layout_width="match_parent"
+                android:id="@+id/map"
+                android:layout_below="@+id/tv_clear_map"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_height="match_parent"
+                />
+            <TextView
+                android:id="@+id/tv_mapname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textSize="30sp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="30dp"
+                android:layout_centerHorizontal="true"
+                android:text="地图名"/>
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:layout_margin="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/identify_shape">
+            <TextView
+                android:id="@+id/tv_addmap"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/btn_shape"
+                android:gravity="center"
+                android:text="添加地图"
+                android:textSize="30sp"
+                android:layout_margin="20dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_map"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:layout_margin="20dp"
+            android:orientation="vertical"
+            android:background="@drawable/identify_shape">
+            <TextView
+                android:id="@+id/tv_addpoint"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:textSize="30sp"
+                android:background="@drawable/btn_shape"
+                android:text="添加点"
+                android:layout_margin="20dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_point"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

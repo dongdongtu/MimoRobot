@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/category_title_wakeup_setting">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="@string/pref_key_wakeup_rotate"
+            android:summary="@string/summary_wakerotate"
+            android:title="@string/wake_turn" />
+
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/category_title_base_setting">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:dialogTitle="请选择导航速度"
+            android:entries="@array/levels"
+            android:entryValues="@array/levels_value"
+            android:key="@string/pref_key_nav_speed"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/nav_speed" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/category_title_autocharge">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/pref_key_auto_charge"
+            android:summary="@string/summary_nav_autocharge"
+            android:title="@string/auto_charge" />
+        <com.chance.mimorobot.widget.SeekBarPreference
+            android:defaultValue="20"
+            android:dialogTitle="请设置机器人自动回充的阈值"
+            android:key="@string/pref_key_auto_charge_value"
+            android:max="70"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/auto_charge_value" />
+
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

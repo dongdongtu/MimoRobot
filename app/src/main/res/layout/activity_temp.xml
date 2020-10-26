@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_temp"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_toRightOf="@+id/iv_head"
+        android:background="@drawable/icon_temp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="36sp" />
+
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/identify_main_shape">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <TextureView
+                android:id="@+id/single_camera_texture_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.chance.mimorobot.arcface.widget.FaceRectView
+                android:id="@+id/single_camera_face_rect_view"
+                android:layout_width="match_parent"
+                android:layout_height="1093dp" />
+        </FrameLayout>
+
+        <ImageView
+            android:id="@+id/iv_head"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="150dp"
+            android:src="@drawable/icon_head" />
+
+
+    </RelativeLayout>
+
+</LinearLayout>

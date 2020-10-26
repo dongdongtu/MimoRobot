@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:background="@drawable/selector_item_user_transparent"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <TextView
+        android:id="@+id/wifi_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:textColor="#000000"
+        android:textSize="14dp" />
+
+    <ImageView
+        android:id="@+id/wifi_signal"
+        android:layout_width="20dp"
+        android:layout_height="15dp"
+        android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:id="@+id/wifi_lock"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_alignTop="@+id/wifi_signal"
+        android:layout_toStartOf="@+id/wifi_signal" />
+
+    <TextView
+        android:id="@+id/wifi_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@+id/wifi_signal"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:textColor="#888888"
+        android:textSize="12dp" />
+
+</RelativeLayout>

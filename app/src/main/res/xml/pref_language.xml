@@ -1,0 +1,34 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <PreferenceCategory android:title="@string/category_title_tts">
+        <ListPreference
+            android:defaultValue="@string/default_speaker_params"
+            android:entries="@array/mandarin_speaker"
+            android:entryValues="@array/mandarin_speaker_params"
+            android:key="@string/pref_key_speaker"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="@string/speaker" />
+
+        <EditTextPreference
+            android:defaultValue="50"
+            android:dialogTitle="请输入语速(0-100)"
+            android:hint="默认值：50"
+            android:inputType="number"
+            android:key="@string/pref_key_tts_speed"
+            android:maxLength="3"
+            android:title="@string/tts_speed" />
+
+        <EditTextPreference
+            android:defaultValue="50"
+            android:dialogTitle="请输入音调(0-100)"
+            android:hint="默认值：50"
+            android:inputType="number"
+            android:key="@string/pref_key_tts_pitch"
+            android:maxLength="3"
+            android:title="@string/tts_pitch" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
