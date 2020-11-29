@@ -91,6 +91,10 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"/>
+        <activity android:name=".activity.QRCodeActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"/>
         <activity android:name=".activity.TempActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"

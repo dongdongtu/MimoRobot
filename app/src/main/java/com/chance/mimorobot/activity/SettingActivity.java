@@ -151,8 +151,8 @@ public class SettingActivity extends AppCompatPreferenceActivity {
             findPreference(getString(R.string.pref_key_robot_qrcode)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-//                    Intent intent = new Intent(getActivity(), DownLoadAndBindActivity.class);
-//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(), QRCodeActivity.class);
+                    startActivity(intent);
                     return true;
                 }
             });
