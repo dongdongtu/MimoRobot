@@ -162,7 +162,7 @@ public class MainActivity extends BaseActivity {
                 startWave();
             } else {
                 stopWave();
-                setSpeakText("请用'你好，奇奇'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
+                setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
             }
             isFirst = false;
         }
@@ -388,7 +388,7 @@ public class MainActivity extends BaseActivity {
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MapListResponse>() {
             @Override
             public void accept(MapListResponse mapListResponse) throws Exception {
-                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
+//                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
 
                 SharedPreferencesManager.newInstance().setMapID(mapId);
                 SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());

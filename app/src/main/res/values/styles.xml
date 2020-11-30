@@ -45,5 +45,10 @@
         <item name="actionMenuTextColor">@android:color/white</item>
         <!--toolbar标题文字颜色-->
         <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:actionBarSize">100dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">20dp</item>
+
     </style>
 </resources>

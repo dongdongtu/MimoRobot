@@ -1,78 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
-        android:layout_width="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="120dp"
+    android:paddingTop="200dp"
+    android:paddingRight="120dp"
+    android:paddingBottom="200dp"
+    android:background="@drawable/background"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginRight="@dimen/main_margin_size"
-        android:layout_marginLeft="@dimen/main_margin_size"
-        android:layout_weight="1"
-        android:layout_gravity="center_vertical"
-        >
-        <ImageView
-            android:id="@+id/expression"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:layout_marginTop="100dp"
-            android:layout_marginBottom="15dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_expression"/>
-        <ImageView
-            android:id="@+id/light"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:layout_alignLeft="@+id/expression"
-            android:layout_below="@+id/expression"
-            android:layout_marginTop="15dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_light"/>
-        <ImageView
-            android:id="@+id/media"
-            android:layout_alignTop="@+id/expression"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/expression"
-            android:layout_marginBottom="15dp"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_media"/>
-        <ImageView
-            android:id="@+id/telphone"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:layout_marginTop="15dp"
-            android:layout_alignLeft="@+id/media"
-            android:layout_below="@+id/media"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_device"/>
-        <ImageView
-            android:id="@+id/music"
-            android:layout_alignTop="@+id/expression"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/media"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:layout_marginBottom="15dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_music"/>
-        <ImageView
-            android:id="@+id/slam"
-            android:layout_marginTop="15dp"
-            android:layout_height="200dp"
-            android:layout_width="240dp"
-            android:layout_alignLeft="@+id/music"
-            android:layout_below="@+id/music"
-            android:scaleType="fitXY"
-            android:src="@drawable/more_slam"/>
+        android:layout_weight="3"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/expression"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_expression" />
+
+            <ImageView
+                android:id="@+id/media"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_media" />
+
+            <ImageView
+                android:id="@+id/music"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_music" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/light"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_light" />
+
+            <ImageView
+                android:id="@+id/telphone"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_device" />
+
+            <ImageView
+                android:id="@+id/slam"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:src="@drawable/more_slam" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
         <ImageView
             android:id="@+id/settting"
-            android:layout_width="wrap_content"
-            android:layout_height="430dp"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/music"
-            android:layout_alignTop="@+id/expression"
-            android:src="@drawable/more_setting"/>
-
-    </RelativeLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:src="@drawable/more_setting" />
+    </LinearLayout>
 </LinearLayout>

@@ -134,6 +134,10 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"/>
+        <activity android:name=".activity.ImageActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"/>
         <activity android:name=".activity.FlightActivity"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"/>
@@ -159,6 +163,8 @@
         <service android:name="com.baidu.location.f" android:enabled="true" > </service>
 
         <service android:name=".service.DownLoadMapService"/>
+
+        <service android:name=".service.FloatViewService"/>
         <!-- 云信后台服务，请使用独立进程。 -->
         <service
             android:name=".widget.neteasedisc.service.MusicService"

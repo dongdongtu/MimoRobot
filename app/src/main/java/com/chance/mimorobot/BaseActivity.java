@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chance.mimorobot.activity.ExplainActivty;
+import com.chance.mimorobot.service.FloatViewService;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,5 +52,21 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+    }
+
+
+
+    public void showStop(){
+        Intent intent = new Intent(BaseActivity.this, FloatViewService.class);
+        //启动FloatViewService
+        startService(intent);
+    }
+
+    public void hideStop(){
+        Log.e("TAG","hideStop");
+        // 销毁悬浮窗
+        Intent intent = new Intent(BaseActivity.this, FloatViewService.class);
+        //终止FloatViewService
+        stopService(intent);
     }
 }

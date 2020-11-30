@@ -8,114 +8,135 @@
     android:background="@drawable/background"
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="160dp"
         android:layout_marginRight="@dimen/main_margin_size"
         android:layout_marginLeft="@dimen/main_margin_size"
-        android:layout_weight="2.5">
-        <ImageView
-            android:id="@+id/business"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="15dp"
-            android:src="@drawable/main_business"/>
-        <ImageView
-            android:id="@+id/face"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:layout_alignLeft="@+id/business"
-            android:layout_below="@+id/business"
-            android:layout_marginTop="15dp"
-            android:src="@drawable/main_face"/>
-        <ImageView
-            android:id="@+id/temperature"
-            android:layout_alignTop="@+id/business"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/business"
-            android:layout_marginBottom="15dp"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:src="@drawable/main_temperature"/>
-        <ImageView
-            android:id="@+id/lineup"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:layout_marginTop="15dp"
-            android:layout_alignLeft="@+id/temperature"
-            android:layout_below="@+id/temperature"
-            android:src="@drawable/main_lineup"/>
-        <ImageView
-            android:id="@+id/explain"
-            android:layout_alignTop="@+id/business"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/temperature"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:layout_marginBottom="15dp"
-            android:src="@drawable/main_explain"/>
-        <ImageView
-            android:id="@+id/identify"
-            android:layout_marginTop="15dp"
-            android:layout_height="160dp"
-            android:layout_width="240dp"
-            android:layout_alignLeft="@+id/explain"
-            android:layout_below="@+id/explain"
-            android:src="@drawable/main_identify"/>
-        <ImageView
-            android:id="@+id/iv_more"
-            android:layout_width="wrap_content"
-            android:layout_height="350dp"
-            android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/explain"
-            android:layout_alignTop="@+id/business"
-            android:src="@drawable/main_more"/>
+        android:orientation="horizontal"
+        android:layout_weight="4">
+        <LinearLayout
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                >
+                <ImageView
+                    android:id="@+id/business"
+                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:src="@drawable/main_business"/>
+                <ImageView
+                    android:id="@+id/temperature"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/main_temperature"/>
 
-    </RelativeLayout>
+                <ImageView
+                    android:id="@+id/explain"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/main_explain"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                >
+                <ImageView
+                    android:id="@+id/face"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/main_face"/>
+
+                <ImageView
+                    android:id="@+id/lineup"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/main_lineup"/>
+                <ImageView
+                    android:id="@+id/identify"
+                    android:layout_margin="10dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/main_identify"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/iv_more"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:src="@drawable/main_more"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="@drawable/main_shape"
+        android:layout_height="133dp"
         android:layout_marginLeft="@dimen/main_margin_size"
+        android:layout_marginTop="60dp"
         android:layout_marginRight="@dimen/main_margin_size"
         android:layout_marginBottom="60dp"
-        android:layout_marginTop="60dp"
-        android:layout_weight="0.9">
+        android:layout_weight="0.9"
+        android:background="@drawable/main_shape"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/tv_speak"
-            android:layout_marginLeft="@dimen/main_text_size"
-            android:layout_marginRight="@dimen/main_text_size"
             android:layout_width="match_parent"
-            android:layout_marginTop="5dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/main_text_size"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="@dimen/main_text_size"
+            android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="请用'你好，奇奇'唤醒我，您可以对我说:''你叫什么名字？''''今天天气如何？''"
+            android:text="请用'你好，安安'唤醒我，您可以对我说:''你叫什么名字？''''今天天气如何？''"
             android:textColor="@color/white"
-            android:textSize="30sp"
-            />
+            android:textSize="35sp" />
+
         <com.chance.mimorobot.widget.WaveView
             android:id="@+id/wave_speak"
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
-            android:visibility="gone"
+            android:layout_height="@dimen/wave_height_size"
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="@dimen/main_margin_size"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
             android:layout_marginRight="@dimen/main_margin_size"
-            android:layout_height="@dimen/wave_height_size"/>
+            android:visibility="gone" />
+
         <ImageView
             android:id="@+id/iv_iv_mic"
-            android:layout_marginTop="20dp"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="@dimen/main_margin_size"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
             android:layout_marginRight="@dimen/main_margin_size"
-            android:src="@drawable/ic_mic"/>
+            android:src="@drawable/ic_mic" />
     </LinearLayout>
 
 </LinearLayout>

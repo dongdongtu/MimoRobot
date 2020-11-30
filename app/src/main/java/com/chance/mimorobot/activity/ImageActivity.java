@@ -38,6 +38,12 @@ public class ImageActivity extends TitleBarActivity {
     }
 
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setContentWithUIUpdate();
+    }
+
     public void setContentWithUIUpdate() {
         if (!TextUtils.isEmpty(getIntent().getStringExtra("data"))) {
             String content = getIntent().getStringExtra("data");

@@ -206,8 +206,8 @@ public class MqttCoreService extends Service {
                             baseModel.setCodeName("heartbeat");
                             HeartBeat heartBeat = new HeartBeat();
                             heartBeat.setMapID(SharedPreferencesManager.newInstance().getMapID());
-                            heartBeat.setRobotStatusCode(Globle.charge);
-                            heartBeat.setRobotElectricQuantity("");
+                            heartBeat.setRobotStatusCode(0);
+                            heartBeat.setRobotElectricQuantity(""+Globle.charge);
                             heartBeat.setRobotSpeed("1");
                             heartBeat.setRobotSpeedUnit("m/s");
                             heartBeat.setPoint(MyApplication.location);

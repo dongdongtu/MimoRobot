@@ -52,6 +52,8 @@ public class SettingActivity extends AppCompatPreferenceActivity {
         root.addView(toolbar, 0);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
     }
 
     @Override

@@ -177,6 +177,9 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
 
     public void setActoin(boolean actoin) {
         isActoin = actoin;
+        if(currentActivity instanceof BaseActivity){
+            ((BaseActivity) currentActivity).hideStop();
+        }
     }
 
     protected SharedPreferences sharedPreferences;
@@ -437,7 +440,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
         if (currentActivity instanceof MainActivity) {
             Log.e(TAG, "onSleep");
             ((MainActivity) currentActivity).stopWave();
-            ((MainActivity) currentActivity).setSpeakText("请用'你好，奇奇'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
+            ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
         }
         if (!isActoin) {
             aiuiWrapper.startTTS("我去休息了", null);
@@ -654,6 +657,9 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                 SharedPreferencesManager.newInstance().setMapPath(mapPath);
                 SlamManager.getInstance().setMap(mapPath);
             } else if ("ACTION_STOP".equals(intent.getAction())) {
+                if (currentActivity instanceof  BaseActivity){
+                    ((BaseActivity)currentActivity).hideStop();
+                }
                 isActoin = false;
                 Log.e(TAG, "ACTION_STOP = " + intent.getAction());
             }
@@ -790,6 +796,9 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                                 aiuiWrapper.startTTS(semanticModel.getSayWord(), null);
                                 isActoin = true;
                                 VocalSpeakManager.getInstance().sleep();
+                                if (currentActivity instanceof  BaseActivity){
+                                    ((BaseActivity)currentActivity).showStop();
+                                }
                                 ActionManager.getInstance().startAction(semanticModel.getNext().getNextActionLists());
                             } else {
                                 aiuiWrapper.startTTS(semanticModel.getSayWord(), null);

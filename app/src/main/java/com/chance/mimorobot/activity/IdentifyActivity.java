@@ -151,7 +151,7 @@ public class IdentifyActivity extends TitleBarActivity {
         if (ret == 0x90) {
             state = 1;
         } else {
-            Flowable.timer(2, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+            Flowable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                 @Override
                 public void accept(Long aLong) throws Exception {
                     runOnUiThread(new Runnable() {
@@ -276,7 +276,6 @@ public class IdentifyActivity extends TitleBarActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
     }
     private static IdentifyActivity.onGetActivit getactivit = null;
 
