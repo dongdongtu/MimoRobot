@@ -34,6 +34,7 @@ import com.chance.mimorobot.model.MapListResponse;
 import com.chance.mimorobot.mqtt.MqttCoreService;
 import com.chance.mimorobot.retrofit.ApiManager;
 import com.chance.mimorobot.service.DownLoadMapService;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.service.FaceUpdateService;
 import com.chance.mimorobot.slam.event.ConnectedEvent;
 import com.chance.mimorobot.slam.event.ConnectionLostEvent;
@@ -325,10 +326,12 @@ public class MainActivity extends BaseActivity {
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
                             Log.e(TAG, "MOK ");
+                            startService(new Intent(MainActivity.this, FaceInfoService.class));
 //                            show(getString(R.string.active_success));
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
                             Log.e(TAG, "ALREADY_ACTIVATED ");
 //                            show(getString(R.string.already_activated));
+                            startService(new Intent(MainActivity.this, FaceInfoService.class));
                         } else {
                             Log.e(TAG, "引擎激活失败，错误码为 " + activeCode);
 //                            Toasty.error(currentActivity,getString(R.string.active_failed, activeCode), Toast.LENGTH_SHORT).show();

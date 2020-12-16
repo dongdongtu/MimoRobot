@@ -106,6 +106,7 @@
     <string name="pref_key_tts_volume">tts_volume</string>
 
     <string name="pref_key_config_network">config_network</string>
+    <string name="pref_key_config_test">config_test</string>
 
     <string name="pref_key_wakeup_rotate">wakerotate</string>
     <string name="pref_key_ir_wakeup">irwake</string>
@@ -124,6 +125,9 @@
     <string name="pref_title_config_network">机器人网络配置</string>
     <string name="enter_config_network_ui">进入系统网络配置界面</string>
 
+    <string name="pref_title_config_test">机器人测试</string>
+    <string name="enter_config_test_ui">进入系统测试界面</string>
+
     <string name="pref_key_copyright">copyright</string>
     <string name="pref_key_version">version</string>
 
@@ -131,6 +135,7 @@
     <string name="pref_tite_version">当前版本</string>
     <string name="summary_copyright">米茉（山东）智能技术有限公司</string>
     <string name="nav">导 航</string>
+    <string name="test">测 试</string>
     <string name="category_title_base_setting">基本设置</string>
     <string name="pref_key_nav_speed">nav_speed</string>
     <string name="nav_speed">导航速度</string>

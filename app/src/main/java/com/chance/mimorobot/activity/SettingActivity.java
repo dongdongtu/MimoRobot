@@ -293,6 +293,33 @@ public class SettingActivity extends AppCompatPreferenceActivity {
 
 
     /**
+     * 配置网络
+     */
+    public static class TestPreferenceFragment extends BasePreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_test);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            findPreference(getString(R.string.pref_key_config_test)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+//                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+//                    startActivity(intent);
+                    startActivity(new Intent(getActivity(), TestActivity.class));
+                    return true;
+                }
+            });
+        }
+    }
+
+
+    /**
      * 设置首选项的值
      *
      * @param context

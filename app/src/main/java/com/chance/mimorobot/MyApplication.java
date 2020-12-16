@@ -70,6 +70,7 @@ import com.chance.mimorobot.slam.slamware.SlamwareAgent;
 import com.chance.mimorobot.statemachine.RobotStatus;
 import com.chance.mimorobot.statemachine.StateMachineManager;
 
+import com.chance.mimorobot.statemachine.robot.Output;
 import com.chance.mimorobot.statemachine.robot.RobotStateMachine;
 import com.chance.mimorobot.update.CustomUpdateParser;
 import com.chance.mimorobot.update.OKHttpUpdateHttpService;
@@ -142,7 +143,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
 
     private final String TAG = MyApplication.class.getSimpleName();
     public LocationClient mLocationClient = null;
-    private MyLocationListener myListener = new MyLocationListener();
+//    private MyLocationListener myListener = new MyLocationListener();
     //BDAbstractLocationListener为7.2版本新增的Abstract类型的监听接口
     //原有BDLocationListener接口暂时同步保留。具体介绍请参考后文第四步的说明
     private StateMachineManager stateMachineManager;
@@ -177,8 +178,14 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
 
     public void setActoin(boolean actoin) {
         isActoin = actoin;
+        Log.e(TAG, "setActoin:");
+
         if(currentActivity instanceof BaseActivity){
             ((BaseActivity) currentActivity).hideStop();
+            Log.e(TAG, "currentActivity hideStop:");
+        }
+        if(!(currentActivity instanceof MainActivity)){
+            Output.navigatorActivity(MainActivity.class);
         }
     }
 
@@ -188,7 +195,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
     @Override
     public void onCreate() {
         super.onCreate();
-        initLocation();
+//        initLocation();
         mApplication = this;
         location = new Location();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -282,7 +289,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
     private void initLocation() {
         mLocationClient = new LocationClient(getApplicationContext());
         //声明LocationClient类
-        mLocationClient.registerLocationListener(myListener);
+//        mLocationClient.registerLocationListener(myListener);
         LocationClientOption option = new LocationClientOption();
 
         option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
@@ -660,6 +667,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                 if (currentActivity instanceof  BaseActivity){
                     ((BaseActivity)currentActivity).hideStop();
                 }
+
                 isActoin = false;
                 Log.e(TAG, "ACTION_STOP = " + intent.getAction());
             }

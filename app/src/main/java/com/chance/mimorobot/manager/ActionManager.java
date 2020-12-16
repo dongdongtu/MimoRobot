@@ -119,6 +119,7 @@ public class ActionManager {
                 }
                 break;
             case 5://展示图片
+                Log.e("TAG","SSSSSSS");
                 Output.navigatorActivity(ImageActivity.getIntent(ActivityUtils.getTopActivity().getApplicationContext(), actionItem.getParameter()));
                 break;
             case 6://右转

@@ -148,6 +148,9 @@
         <activity android:name=".activity.TrainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"/>
+        <activity android:name=".activity.TestActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"/>
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="8xVxcYyMjQe0xzWGzGu290IPDIdVYrb0" >
@@ -162,7 +165,9 @@
         <service android:name=".service.PngIntentService"/>
         <service android:name="com.baidu.location.f" android:enabled="true" > </service>
 
+
         <service android:name=".service.DownLoadMapService"/>
+        <service android:name=".service.FaceInfoService"/>
 
         <service android:name=".service.FloatViewService"/>
         <!-- 云信后台服务，请使用独立进程。 -->

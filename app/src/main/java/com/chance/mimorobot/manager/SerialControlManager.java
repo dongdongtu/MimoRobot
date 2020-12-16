@@ -37,6 +37,14 @@ public class SerialControlManager {
     private static SerialControlManager serialControlManager = null;
 
 
+
+    private int lefthand=0;
+    private int righthand=0;
+    private int leftxiahand=0;
+    private int rightxiahand=0;
+    private int headghor=0;
+    private int headver=0;
+
     public static SerialControlManager newInstance() {
         if (serialControlManager == null) {
             serialControlManager = new SerialControlManager();
@@ -133,6 +141,7 @@ public class SerialControlManager {
      *头左转
      */
     public void headTurnLeft(int time){
+        headghor=headghor+time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -150,6 +159,7 @@ public class SerialControlManager {
      *头右转
      */
     public void headTurnRight(int time){
+        headghor=headghor-time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -168,6 +178,8 @@ public class SerialControlManager {
      *头向上
      */
     public void headTurnUp(int time){
+        headver=headver+time;
+
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -187,6 +199,7 @@ public class SerialControlManager {
      *头向下
      */
     public void headTurnDown(int time){
+        headver=headver-time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -206,6 +219,7 @@ public class SerialControlManager {
      *左胳膊向上
      */
     public void armLeftTurnUp(int time){
+        lefthand=lefthand+time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -225,6 +239,7 @@ public class SerialControlManager {
      *左胳膊向下
      */
     public void armLeftTurnDown(int time){
+        lefthand=lefthand-time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -241,9 +256,49 @@ public class SerialControlManager {
 
 
     /**
+     *左小胳膊向上
+     */
+    public void armLeftXiaTurnUp(int time){
+        leftxiahand=leftxiahand+time;
+        byte[] sd = new byte[10];
+        sd[0] = (byte) 0xAA;
+        sd[1] = (byte) 0xBB;
+        sd[2] = (byte) 0x06;
+        sd[3] = (byte) 0x01;//命令
+        sd[4] = (byte) 0x06;//电机号
+        sd[5] = (byte) 0x01;   //方向
+        sd[6] = (byte) 0x00;   //速度
+        sd[7] = (byte) 0xc7;   //速度
+        sd[8] = (byte) time;   //时间
+        sd[9] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]);
+        serialPort.send(sd);
+    }
+
+
+    /**
+     *左小胳膊向下
+     */
+    public void armLeftXiaTurnDown(int time){
+        leftxiahand=leftxiahand-time;
+        byte[] sd = new byte[10];
+        sd[0] = (byte) 0xAA;
+        sd[1] = (byte) 0xBB;
+        sd[2] = (byte) 0x06;
+        sd[3] = (byte) 0x01;//命令
+        sd[4] = (byte) 0x06;//电机号
+        sd[5] = (byte) 0x02;   //方向
+        sd[6] = (byte) 0x00;   //速度
+        sd[7] = (byte) 0xc7;   //速度
+        sd[8] = (byte) time;   //时间
+        sd[9] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]);
+        serialPort.send(sd);
+    }
+
+    /**
      *右胳膊向上
      */
     public void armRightTurnUp(int time){
+        righthand=righthand+time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -263,6 +318,7 @@ public class SerialControlManager {
      *右胳膊向下
      */
     public void armRightTurnDown(int time){
+        righthand=righthand-time;
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -277,6 +333,46 @@ public class SerialControlManager {
         serialPort.send(sd);
     }
 
+
+
+    /**
+     *右小胳膊向上
+     */
+    public void armRightXiaTurnUp(int time){
+        rightxiahand=rightxiahand+time;
+        byte[] sd = new byte[10];
+        sd[0] = (byte) 0xAA;
+        sd[1] = (byte) 0xBB;
+        sd[2] = (byte) 0x06;
+        sd[3] = (byte) 0x01;//命令
+        sd[4] = (byte) 0x05;//电机号
+        sd[5] = (byte) 0x01;   //方向
+        sd[6] = (byte) 0x00;   //速度
+        sd[7] = (byte) 0xc7;   //速度
+        sd[8] = (byte) time;   //时间
+        sd[9] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]);
+        serialPort.send(sd);
+    }
+
+
+    /**
+     *右xiao胳膊向下
+     */
+    public void armRightXiaTurnDown(int time){
+        rightxiahand=rightxiahand-time;
+        byte[] sd = new byte[10];
+        sd[0] = (byte) 0xAA;
+        sd[1] = (byte) 0xBB;
+        sd[2] = (byte) 0x06;
+        sd[3] = (byte) 0x01;//命令
+        sd[4] = (byte) 0x05;//电机号
+        sd[5] = (byte) 0x02;   //方向
+        sd[6] = (byte) 0x00;   //速度
+        sd[7] = (byte) 0xc7;   //速度
+        sd[8] = (byte) time;   //时间
+        sd[9] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]);
+        serialPort.send(sd);
+    }
 
 
     public void lightGREENControl(){
@@ -347,6 +443,29 @@ public class SerialControlManager {
     }
 
 
+    public int getLefthand() {
+        return lefthand;
+    }
+
+    public int getRighthand() {
+        return righthand;
+    }
+
+    public int getLeftxiahand() {
+        return leftxiahand;
+    }
+
+    public int getRightxiahand() {
+        return rightxiahand;
+    }
+
+    public int getHeadghor() {
+        return headghor;
+    }
+
+    public int getHeadver() {
+        return headver;
+    }
     public void destroy() {
         if (serialPort != null) {
             serialPort.stopListening();
