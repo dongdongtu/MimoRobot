@@ -433,9 +433,9 @@ public class CameraHelper implements Camera.PreviewCallback {
             if (cameraListener == null) {
                 Log.e(TAG, "cameraListener is null, callback will not be called");
             }
-            if (previewDisplayView == null) {
-                throw new RuntimeException("you must preview on a textureView or a surfaceView");
-            }
+//            if (previewDisplayView == null) {
+//                throw new RuntimeException("you must preview on a textureView or a surfaceView");
+//            }
             return new CameraHelper(this);
         }
     }

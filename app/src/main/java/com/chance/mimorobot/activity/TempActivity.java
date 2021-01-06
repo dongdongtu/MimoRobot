@@ -1,5 +1,6 @@
 package com.chance.mimorobot.activity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -41,10 +42,12 @@ import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.model.BaseResponseModel;
 import com.chance.mimorobot.model.TempRequestModel;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.utils.ImageTools;
 
 import java.io.IOException;
 import java.sql.Time;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -148,7 +151,7 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        SerialControlManager.newInstance().headTurnUp(5);
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -251,14 +254,33 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
         }
 
         FaceServer.getInstance().unInit();
+        startService(new Intent(TempActivity.this, FaceInfoService.class));
         super.onDestroy();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SerialControlManager.newInstance().headTurnRight(3);
+        Flowable.timer(300,TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                SerialControlManager.newInstance().headTurnDown(5);
+            }
+        });
+
+    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        SerialControlManager.newInstance().headTurnDown(5);
+        SerialControlManager.newInstance().headTurnLeft(3);
+        Flowable.timer(300,TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                SerialControlManager.newInstance().headTurnUp(5);
+            }
+        });
     }
 
     private void initCamera() {
@@ -476,7 +498,9 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
 
     public void setTemp(float a){
         temp=a;
-        tvTemp.setText(a+"°C");
+        String p=decimalFormat.format(a+7);
+        tvTemp.setText(p+"°C");
     }
 
+    private DecimalFormat decimalFormat=new DecimalFormat(".00");
 }

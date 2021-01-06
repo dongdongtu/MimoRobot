@@ -487,6 +487,25 @@ public class AIUIWrapper {
         sendMessage(wakeupMsg);
     }
 
+
+    /**
+     * 对话模式
+     */
+    public void  speechParams(boolean flag) {
+        /**
+         * "speech":{
+         * 		"data_source":"sdk",
+         * 		"interact_mode": "continuous"
+         *        }
+         */
+        String str;
+        if (flag){
+            str = "{\"speech\":{\"work_mode\":\"intent\",\"intent_engine_type\":\"cloud\",\"data_source\":\"" + "sdk" + "\",\"interact_mode\":\"" + "continuous" + "\"}}";
+        } else{
+            str = "{\"speech\":{\"work_mode\":\"intent\",\"intent_engine_type\":\"cloud\",\"data_source\":\"" + "sdk" + "\",\"interact_mode\":\"" + "oneshot"+ "\"}}";
+        }
+        setAIUIParams(str);
+    }
     /**
      * 休息
      */

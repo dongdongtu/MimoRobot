@@ -470,6 +470,7 @@ public class FaceHelper {
         }
 
         public FaceHelper build() {
+            Log.e(TAG,"6");
             return new FaceHelper(this);
         }
     }

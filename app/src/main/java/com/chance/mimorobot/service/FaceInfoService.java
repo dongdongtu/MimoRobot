@@ -1,20 +1,35 @@
 package com.chance.mimorobot.service;
 
+import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.SurfaceView;
+import android.view.TextureView;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
+import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.enums.DetectFaceOrientPriority;
 import com.arcsoft.face.enums.DetectMode;
 import com.bumptech.glide.Glide;
+import com.chance.mimorobot.MyApplication;
 import com.chance.mimorobot.R;
 import com.chance.mimorobot.activity.FaceDiscernActivity;
 import com.chance.mimorobot.arcface.CompareResult;
@@ -31,6 +46,8 @@ import com.chance.mimorobot.arcface.utils.face.RequestLivenessStatus;
 import com.chance.mimorobot.db.DBManager;
 import com.chance.mimorobot.db.dao.FaceEntityDao;
 import com.chance.mimorobot.db.entity.FaceEntity;
+import com.chance.mimorobot.helper.FaceTrackSpeedParse;
+import com.chance.mimorobot.manager.SerialControlManager;
 import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.statemachine.robot.Output;
 
@@ -42,6 +59,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
+import butterknife.BindView;
+import cn.chuangze.robot.aiuilibrary.AIUIWrapper;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -49,9 +69,10 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class FaceInfoService extends Service  {
+public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlobalLayoutListener{
 
 
     private final  String TAG =FaceInfoService.class.getSimpleName();
@@ -117,7 +138,8 @@ public class FaceInfoService extends Service  {
     private CompositeDisposable getFeatureDelayedDisposables = new CompositeDisposable();
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
 
-
+    private Disposable moveDisposable = null;
+    private float vx, vy = 0;
 
     /**
      * 活体检测的开关
@@ -129,24 +151,89 @@ public class FaceInfoService extends Service  {
      */
     private static final float SIMILAR_THRESHOLD = 0.7F;
 
+    TextureView previewView;
+    //定义浮动窗口布局
+    private LinearLayout mFloatLayout;
+    private WindowManager.LayoutParams wmParams;
+    //创建浮动窗口设置布局参数的对象
+    private WindowManager mWindowManager;
 
+    private String gender;
     @Override
     public void onCreate() {
         super.onCreate();
+        wmParams = new WindowManager.LayoutParams();
+        //通过getApplication获取的是WindowManagerImpl.CompatModeWrapper
+        mWindowManager = (WindowManager)getApplication().getSystemService(getApplication().WINDOW_SERVICE);
+        //设置window type
+        wmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        //设置图片格式，效果为背景透明
+        wmParams.format = PixelFormat.RGBA_8888;
+        //设置浮动窗口不可聚焦（实现操作除浮动窗口外的其他可见窗口的操作）
+        wmParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+        //调整悬浮窗显示的停靠位置为左侧置顶
+        wmParams.gravity = Gravity.RIGHT | Gravity.BOTTOM;
+        // 以屏幕左上角为原点，设置x、y初始值，相对于gravity
+        wmParams.x = -1500;
+        wmParams.y = -1500;
+
+        //设置悬浮窗口长宽数据
+        wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        wmParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        LayoutInflater inflater = LayoutInflater.from(getApplication());
+        //获取浮动窗口视图所在布局
+        mFloatLayout = (LinearLayout) inflater.inflate(R.layout.alert_window_face, null);
+        //添加mFloatLayout
+        mWindowManager.addView(mFloatLayout, wmParams);
+        //浮动窗口按钮
+        previewView = (TextureView) mFloatLayout.findViewById(R.id.texture_preview);
+
+        mFloatLayout.measure(View.MeasureSpec.makeMeasureSpec(0,
+                View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
+                .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        compareResultList = new ArrayList<>();
         FaceServer.getInstance().init(this);
-        init();
+        Log.e(TAG,"1");
+        previewView.getViewTreeObserver().addOnGlobalLayoutListener(this);
+
+        if (moveDisposable == null) {
+            moveDisposable = Flowable.interval(400, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
+                @Override
+                public void accept(Long aLong) throws Exception {
+                    if(!((MyApplication)getApplication()).isActoin()){
+                        if (vx < 0) {
+//                        Log.e(TAG, "vx=" + vx + ",vy=" + vy);
+                            SerialControlManager.newInstance().headTurnLeft(3);
+                        } else if (vx > 0) {
+//                        Log.e(TAG, "vx=" + vx + ",vy=" + vy);
+                            SerialControlManager.newInstance().headTurnRight(3);
+                        }
+                    }
+                }
+            });
+        }
     }
 
+    @Override
+    public void onGlobalLayout() {
+        previewView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        initEngine();
+        initCamera();
+    }
+    /**
     private void init() {
         compareResultList = new ArrayList<>();
         initEngine();
         initCamera();
-    }
+    }*/
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         unInitEngine();
+        moveDisposable.dispose();
+        moveDisposable = null;
     }
 
     /**
@@ -181,6 +268,15 @@ public class FaceInfoService extends Service  {
         }
     }
 
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return super.onStartCommand(intent, flags, startId);
+
+    }
+
+
+
     /**
      * 销毁引擎，faceHelper中可能会有特征提取耗时操作仍在执行，加锁防止crash
      */
@@ -206,8 +302,25 @@ public class FaceInfoService extends Service  {
     }
 
 
-    private void initCamera() {
 
+    /**
+     * 跟随人脸运动
+     *
+     * @param
+     */
+    private void trackFaceMove(Camera camera, FacePreviewInfo facePreviewInfo) {
+        float centerX = (float) facePreviewInfo.getFaceInfo().getRect().centerX() / (float) camera.getParameters().getPreviewSize().width;
+        float centerY = (float) facePreviewInfo.getFaceInfo().getRect().centerY() / (float) camera.getParameters().getPreviewSize().height;
+        float width = (float) facePreviewInfo.getFaceInfo().getRect().width() / (float) camera.getParameters().getPreviewSize().width;
+        vx = FaceTrackSpeedParse.getVx(centerX);
+        vy = FaceTrackSpeedParse.getVy(centerY);
+        float vz = FaceTrackSpeedParse.getVz(width);
+//        Log.e("CameraFragment", "vx=" + vx + ",vy=" + vy);
+//        cameraPresenter.trackFaceMove(vx, vy);
+    }
+
+
+    private void initCamera() {
 
         final FaceListener faceListener = new FaceListener() {
             @Override
@@ -323,11 +436,12 @@ public class FaceInfoService extends Service  {
         CameraListener cameraListener = new CameraListener() {
             @Override
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
+                Log.e(TAG,"4");
                 Camera.Size lastPreviewSize = previewSize;
                 camera.setDisplayOrientation(180);
                 previewSize = camera.getParameters().getPreviewSize();
 
-                Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
+//                Log.i(TAG, "onCameraOpened: " + faceHelper.toString());
                 // 切换相机的时候可能会导致预览尺寸发生变化
                 if (faceHelper == null ||
                         lastPreviewSize == null ||
@@ -335,6 +449,7 @@ public class FaceInfoService extends Service  {
                     Integer trackedFaceCount = null;
                     // 记录切换时的人脸序号
                     if (faceHelper != null) {
+                        Log.e(TAG,"5");
                         trackedFaceCount = faceHelper.getTrackedFaceCount();
                         faceHelper.release();
                     }
@@ -348,6 +463,7 @@ public class FaceInfoService extends Service  {
                             .faceListener(faceListener)
                             .trackedFaceCount(trackedFaceCount == null ? SharedPreferencesManager.newInstance().getTrackedFaceCount() : trackedFaceCount)
                             .build();
+                    Log.e(TAG,"6");
                 }
             }
 
@@ -357,10 +473,36 @@ public class FaceInfoService extends Service  {
 
                 List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
 
+
 //                registerFace(nv21, facePreviewInfoList);
+                //判断人脸性别
+//                List<AgeInfo> ageInfoList = new ArrayList<>();
+//                List<GenderInfo> genderInfoList = new ArrayList<>();
+//                int ageCode = ftEngine.getAge(ageInfoList);
+//                int genderCode = ftEngine.getGender(genderInfoList);
+//                if (( genderCode ) != ErrorInfo.MOK) {
+////                    Log.e(TAG,ageCode+"  "+genderCode);
+//                    vx =0;
+//                    vy =0;
+//                    return;
+//                }
+//                if(genderInfoList.size()>0){
+//                    if (genderInfoList.get(0).getGender()==0){//男
+//                        gender="帅哥";
+//                    }else if (genderInfoList.get(0).getGender()==1){//女
+//                        gender="美女";
+//                    }
+//                }
 
 
                 if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
+                    //跟踪人脸
+                    if (facePreviewInfoList.size() > 0) {
+                        trackFaceMove(camera, facePreviewInfoList.get(0));
+                    }else{
+                        vx =0;
+                        vy =0;
+                    }
                     for (int i = 0; i < facePreviewInfoList.size(); i++) {
                         Integer status = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
                         /**
@@ -385,6 +527,9 @@ public class FaceInfoService extends Service  {
 //                            Log.i(TAG, "onPreview: fr start = " + System.currentTimeMillis() + " trackId = " + facePreviewInfoList.get(i).getTrackedFaceCount());
                         }
                     }
+                }else{
+                    vx =0;
+                    vy =0;
                 }
             }
 
@@ -408,8 +553,11 @@ public class FaceInfoService extends Service  {
         };
 
         cameraHelper = new CameraHelper.Builder()
+                .previewViewSize(new Point(previewView.getMeasuredWidth(), previewView.getMeasuredHeight()))
+                .rotation(mWindowManager.getDefaultDisplay().getRotation())
                 .specificCameraId(rgbCameraID != null ? rgbCameraID : Camera.CameraInfo.CAMERA_FACING_FRONT)
                 .isMirror(false)
+                .previewOn(previewView)
                 .cameraListener(cameraListener)
                 .build();
         cameraHelper.init();
@@ -495,14 +643,36 @@ public class FaceInfoService extends Service  {
                                 Log.e(TAG,"compareResult.getUserName()");
                                 FaceEntity faceEntity=DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique();
                                 File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResult.getUserName() + FaceServer.IMG_SUFFIX);
-
+                                AIUIWrapper.getInstance(FaceInfoService.this).startTTS(faceEntity.getSayHelloText(),null);
                             }
 
 //                            faceHelper.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
 
                         } else {
+                            boolean isAdded = false;
+                            if (compareResultList == null) {
+                                requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                                return;
+                            }
+                            if (!isAdded) {
+                                //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
+                                if (compareResultList.size() >= MAX_DETECT_NUM) {
+                                    compareResultList.remove(0);
+//                                    adapter.notifyItemRemoved(0);
+                                }
+                                //添加显示人员时，保存其trackId
+                                compareResult.setTrackId(requestId);
+                                compareResultList.add(compareResult);
+//                                adapter.notifyItemInserted(compareResultList.size() - 1);
+                            }
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
+
+                            if(!((MyApplication)getApplication()).isActoin()){
+                                AIUIWrapper.getInstance(FaceInfoService.this).startTTS("你好，我能为您做些什么？",null);
+                            }
+                            Log.i(TAG,"compareResult5"+requestId);
 //                            faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
-                            retryRecognizeDelayed(requestId);
+//                            retryRecognizeDelayed(requestId);
                         }
                     }
 

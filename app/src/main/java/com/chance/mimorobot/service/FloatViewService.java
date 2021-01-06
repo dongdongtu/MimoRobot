@@ -39,7 +39,8 @@ public class FloatViewService extends Service {
     }
 
     @SuppressWarnings("static-access")
-    @SuppressLint("InflateParams") private void createFloatView()
+    @SuppressLint("InflateParams")
+    private void createFloatView()
     {
         wmParams = new WindowManager.LayoutParams();
         //通过getApplication获取的是WindowManagerImpl.CompatModeWrapper
@@ -71,43 +72,7 @@ public class FloatViewService extends Service {
         mFloatLayout.measure(View.MeasureSpec.makeMeasureSpec(0,
                 View.MeasureSpec.UNSPECIFIED), View.MeasureSpec
                 .makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        //设置监听浮动窗口的触摸移动
-//        mFloatView.setOnTouchListener(new View.OnTouchListener()
-//        {
-//
-//            boolean isClick;
-//
-//            @SuppressLint("ClickableViewAccessibility") @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN:
-////                        mFloatView.setBackgroundResource(R.drawable.circle_red);
-//                        isClick = false;
-//                        break;
-//                    case MotionEvent.ACTION_MOVE:
-//                        isClick = true;
-//                        // getRawX是触摸位置相对于屏幕的坐标，getX是相对于按钮的坐标
-//                        wmParams.x = (int) event.getRawX()
-//                                - mFloatView.getMeasuredWidth() / 2;
-//                        // 减25为状态栏的高度
-//                        wmParams.y = (int) event.getRawY()
-//                                - mFloatView.getMeasuredHeight() / 2 - 75;
-//                        // 刷新
-//                        mWindowManager.updateViewLayout(mFloatLayout, wmParams);
-//                        return true;
-//                    case MotionEvent.ACTION_UP:
-////                        mFloatView.setBackgroundResource(R.drawable.circle_cyan);
-//                        return isClick;// 此处返回false则属于移动事件，返回true则释放事件，可以出发点击否。
-//
-//                    default:
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
-
-        mFloatView.setOnClickListener(new View.OnClickListener()
-        {
+        mFloatView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v)

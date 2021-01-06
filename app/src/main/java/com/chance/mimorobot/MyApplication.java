@@ -49,6 +49,7 @@ import com.chance.mimorobot.model.AiuiResultEntity;
 import com.chance.mimorobot.model.GetSemanticModel;
 import com.chance.mimorobot.model.InitModel;
 import com.chance.mimorobot.model.InitRequest;
+import com.chance.mimorobot.model.SemanticAciton;
 import com.chance.mimorobot.model.SemanticDialog;
 import com.chance.mimorobot.model.SemanticModel;
 import com.chance.mimorobot.mqtt.model.BaseMqttModel;
@@ -143,7 +144,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
 
     private final String TAG = MyApplication.class.getSimpleName();
     public LocationClient mLocationClient = null;
-//    private MyLocationListener myListener = new MyLocationListener();
+    //    private MyLocationListener myListener = new MyLocationListener();
     //BDAbstractLocationListener为7.2版本新增的Abstract类型的监听接口
     //原有BDLocationListener接口暂时同步保留。具体介绍请参考后文第四步的说明
     private StateMachineManager stateMachineManager;
@@ -180,11 +181,11 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
         isActoin = actoin;
         Log.e(TAG, "setActoin:");
 
-        if(currentActivity instanceof BaseActivity){
+        if (currentActivity instanceof BaseActivity) {
             ((BaseActivity) currentActivity).hideStop();
             Log.e(TAG, "currentActivity hideStop:");
         }
-        if(!(currentActivity instanceof MainActivity)){
+        if (!(currentActivity instanceof MainActivity)) {
             Output.navigatorActivity(MainActivity.class);
         }
     }
@@ -206,6 +207,11 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
         vocalSpeakInterface.onCreate(this);
         aiuiWrapper = AIUIWrapper.getInstance(getApplicationContext());
         aiuiWrapper.setInteract(1 * Globle.ONE_MINUTE, 5000);
+        if (sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
+            aiuiWrapper.speechParams(true);
+        } else {
+            aiuiWrapper.speechParams(false);
+        }
         serialControlManager = SerialControlManager.newInstance();
         serialControlManager.setDeviceEventListener(this);
         serialControlManager.setFace(7);
@@ -392,6 +398,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
             aiuiWrapper.wakeUp(0);
             int wakeAngle = angel > 180 ? -(angel - 360) : -angel;
             if (RobotStateMachine.CHARGE_STATE != stateMachineManager.getCurrentState()) {
+                Log.e("wakeUp","wakeUp"+wakeAngle);
                 SlamManager.getInstance().rotate(new Rotation((float) Math.toRadians(wakeAngle)));
             }
         } else {
@@ -444,12 +451,16 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
     @Override
     public void onSleep(int arg1) {
         isWakeUp = false;
+        Log.e(TAG, "onSleep");
         if (currentActivity instanceof MainActivity) {
-            Log.e(TAG, "onSleep");
             ((MainActivity) currentActivity).stopWave();
-            ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
+            if (sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
+                ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+            } else {
+                ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'或者点击麦克风唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+            }
         }
-        if (!isActoin) {
+        if (!isActoin && sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
             aiuiWrapper.startTTS("我去休息了", null);
         }
 
@@ -600,60 +611,93 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                 String data = intent.getStringExtra(EXTRAS_REV_DATA);
                 try {
                     JSONObject object = new JSONObject(data);
-                    switch (object.getInt("code")) {
-                        case 1:
+                    if (object.getString("from").equals("platform")) {
+                        switch (object.getInt("code")) {
+                            case 1:
 
-                            break;
-                        case 2:
-                            ReceiveActionModel mqttActionModel = new Gson().fromJson(object.getJSONObject("data").toString(), ReceiveActionModel.class);
-                            returnmessage(2, object.getString("CodeName"));
-                            break;
-                        case 3:
-                            JSONObject jsonObject = new JSONObject(object.getJSONObject("data").toString());
-                            aiuiWrapper.startTTS(jsonObject.optString("SayWord"), null);
-                            returnmessage(3, object.getString("CodeName"));
-                            break;
-                        case 4:
-                            MapUpdateModel mapUpdateModel = new Gson().fromJson(object.getJSONObject("data").toString(), MapUpdateModel.class);
-                            SharedPreferencesManager.newInstance().setMapID(mapUpdateModel.getMapid());
+                                break;
+                            case 2:
+                                ReceiveActionModel mqttActionModel = new Gson().fromJson(object.getJSONObject("data").toString(), ReceiveActionModel.class);
+                                returnmessage(2, object.getString("CodeName"));
+                                break;
+                            case 3:
+                                JSONObject jsonObject = new JSONObject(object.getJSONObject("data").toString());
+                                aiuiWrapper.startTTS(jsonObject.optString("SayWord"), null);
+                                returnmessage(3, object.getString("CodeName"));
+                                break;
+                            case 4:
+                                MapUpdateModel mapUpdateModel = new Gson().fromJson(object.getJSONObject("data").toString(), MapUpdateModel.class);
+                                SharedPreferencesManager.newInstance().setMapID(mapUpdateModel.getMapid());
 //                            DownLoadMapService.startActionFoo(MainActivity.this, mapUpdateModel.getMapSourceUrl());
-                            Intent intentsevice = new Intent(MyApplication.this, DownLoadMapService.class);
-                            intentsevice.setAction("sevice.action.FOO");
-                            intentsevice.putExtra("sevice.extra.PARAM1", mapUpdateModel.getMapSourceUrl());
-                            startService(intentsevice);
-                            returnmessage(4, object.getString("CodeName"));
+                                Intent intentsevice = new Intent(MyApplication.this, DownLoadMapService.class);
+                                intentsevice.setAction("sevice.action.FOO");
+                                intentsevice.putExtra("sevice.extra.PARAM1", mapUpdateModel.getMapSourceUrl());
+                                startService(intentsevice);
+                                returnmessage(4, object.getString("CodeName"));
 //                            if (disposabletime != null)
 //                                disposabletime.dispose();
-                            break;
-                        case 7:
-                            SlamwareAgent.getNewInstance().goHome();
-                            returnmessage(7, object.getString("CodeName"));
-                            break;
-                        case 8:
-                            XUpdate.newBuild(currentActivity)
-                                    .updateUrl("http://47.110.149.187:10031/api/RobotInit/GetNewAndroidVesion?RobotNo=" + Globle.robotId + "&IsTest=0")
-                                    .updateParser(new CustomUpdateParser(SystemUtils.getAppVersionCode(currentActivity))) //设置自定义的版本更新解析器
-                                    .update();
-                            returnUpdateMessage(8, object.getString("CodeName"), object.getJSONObject("data").getInt("Versionid"));
-                            break;
-                        case 10:
-                            if (!(currentActivity instanceof FaceDiscernActivity)) {
-                                FaceEntity faceEntity = new Gson().fromJson(object.getJSONObject("data").toString(), FaceEntity.class);
-                                updateFaceService("add", faceEntity);
-                                returnmessage(10, object.getString("CodeName"), faceEntity.getFaceid());
-                            }
-                            break;
-                        case 11:
+                                break;
+                            case 7:
+                                SlamwareAgent.getNewInstance().goHome();
+                                returnmessage(7, object.getString("CodeName"));
+                                break;
+                            case 8:
+                                XUpdate.newBuild(currentActivity)
+                                        .updateUrl("http://47.110.149.187:10031/api/RobotInit/GetNewAndroidVesion?RobotNo=" + Globle.robotId + "&IsTest=0")
+                                        .updateParser(new CustomUpdateParser(SystemUtils.getAppVersionCode(currentActivity))) //设置自定义的版本更新解析器
+                                        .update();
+                                returnUpdateMessage(8, object.getString("CodeName"), object.getJSONObject("data").getInt("Versionid"));
+                                break;
+                            case 10:
+                                if (!(currentActivity instanceof FaceDiscernActivity)) {
+                                    Log.e(TAG,object.getJSONObject("data").toString());
+                                    FaceEntity faceEntity = new Gson().fromJson(object.getJSONObject("data").toString(), FaceEntity.class);
+                                    updateFaceService("add", faceEntity);
+                                    returnmessage(10, object.getString("CodeName"), faceEntity.getFaceid());
+                                }
+                                break;
+                            case 11:
 
-                            break;
-                        case 12:
-                            if (!(currentActivity instanceof FaceDiscernActivity)) {
-                                FaceEntity faceEntity1 = new Gson().fromJson(object.getJSONObject("data").toString(), FaceEntity.class);
-                                updateFaceService("delete", faceEntity1);
-                                returnmessage(12, object.getString("CodeName"), faceEntity1.getFaceid());
-                            }
-                            break;
+                                break;
+                            case 12:
+                                if (!(currentActivity instanceof FaceDiscernActivity)) {
+                                    Log.e(TAG,data);
+                                    FaceEntity faceEntity1 = new Gson().fromJson(object.getJSONObject("data").toString(), FaceEntity.class);
+                                    updateFaceService("delete", faceEntity1);
+                                    returnmessage(12, object.getString("CodeName"), faceEntity1.getFaceid());
+                                }
+                                break;
+                            case 13:
+                                isActoin = true;
+                                VocalSpeakManager.getInstance().sleep();
+                                if (currentActivity instanceof BaseActivity) {
+                                    ((BaseActivity) currentActivity).showStop();
+                                }
+                                SemanticAciton semanticAciton = new Gson().fromJson(object.getJSONObject("data").toString(), SemanticAciton.class);
+                                ActionManager.getInstance().startAction(semanticAciton.getNextActionLists());
+                                break;
 
+                        }
+                    }
+                    if (object.getString("from").equals("pad")) {
+                        JSONObject object1 = new JSONObject(data);
+                        JSONObject mqttdata=new JSONObject(object1.optString("data"));
+                        Log.e(TAG,object1.optString("data"));
+                        switch (mqttdata.getInt("code")) {
+                            case 1:
+                                aiuiWrapper.sleep();
+                                break;
+                            case 2:
+                                aiuiWrapper.startTTS(mqttdata.optString("data"), null);
+                                break;
+                            case 3:
+                                int i = Integer.valueOf(mqttdata.getString("data"));
+                                SerialControlManager.newInstance().setFace(i);
+                                break;
+                            case 4:
+                                aiuiWrapper.speechParams(!sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true));
+                                break;
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -664,8 +708,8 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                 SharedPreferencesManager.newInstance().setMapPath(mapPath);
                 SlamManager.getInstance().setMap(mapPath);
             } else if ("ACTION_STOP".equals(intent.getAction())) {
-                if (currentActivity instanceof  BaseActivity){
-                    ((BaseActivity)currentActivity).hideStop();
+                if (currentActivity instanceof BaseActivity) {
+                    ((BaseActivity) currentActivity).hideStop();
                 }
 
                 isActoin = false;
@@ -804,8 +848,8 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                                 aiuiWrapper.startTTS(semanticModel.getSayWord(), null);
                                 isActoin = true;
                                 VocalSpeakManager.getInstance().sleep();
-                                if (currentActivity instanceof  BaseActivity){
-                                    ((BaseActivity)currentActivity).showStop();
+                                if (currentActivity instanceof BaseActivity) {
+                                    ((BaseActivity) currentActivity).showStop();
                                 }
                                 ActionManager.getInstance().startAction(semanticModel.getNext().getNextActionLists());
                             } else {
@@ -813,6 +857,9 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                             }
                         } else {
                             StateMachineManager.getInstance().inputAiuiResult(result);
+                        }
+                        if (!sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
+                            ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'或者点击麦克风唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
                         }
                     }
                 }, new Consumer<Throwable>() {

@@ -15,6 +15,7 @@ import com.chance.mimorobot.activity.VideoActivity;
 import com.chance.mimorobot.activity.WebActivity;
 import com.chance.mimorobot.model.ActionItem;
 import com.chance.mimorobot.model.MapPoint;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.slam.slamware.SlamwareAgent;
 import com.chance.mimorobot.statemachine.robot.Output;
 import com.google.gson.Gson;
@@ -33,6 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+
+import static com.blankj.utilcode.util.ActivityUtils.getTopActivity;
 
 public class ActionManager {
     private final String TAG = ActionManager.class.getSimpleName();
@@ -120,7 +123,7 @@ public class ActionManager {
                 break;
             case 5://展示图片
                 Log.e("TAG","SSSSSSS");
-                Output.navigatorActivity(ImageActivity.getIntent(ActivityUtils.getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                Output.navigatorActivity(ImageActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
                 break;
             case 6://右转
                 moveByDirection(MoveDirection.TURN_RIGHT);
@@ -169,13 +172,13 @@ public class ActionManager {
                 serialControlManager.setFace(Integer.parseInt(actionItem.getParameter()));
                 break;
             case 13://展示网页
-                Output.navigatorActivity(WebActivity.getIntent(ActivityUtils.getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                Output.navigatorActivity(WebActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
                 break;
             case 14://抬左手
-                SerialControlManager.newInstance().armLeftTurnUp(30);
+                SerialControlManager.newInstance().armLeftTurnUp(50);
                 break;
             case 15://抬右手
-                SerialControlManager.newInstance().armRightTurnUp(30);
+                SerialControlManager.newInstance().armRightTurnUp(50);
                 break;
             case 16://头部左转
                 SerialControlManager.newInstance().headTurnLeft(5);
@@ -197,15 +200,16 @@ public class ActionManager {
                 }
                 break;
             case 19://播放音频
-                Output.navigatorActivity(MusicActivity.getIntent(ActivityUtils.getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                Output.navigatorActivity(MusicActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
                 break;
             case 20://视频播放
-                Output.navigatorActivity(VideoActivity.getIntent(ActivityUtils.getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
                 break;
             case 21://打印小票
 
                 break;
             case 22://拍照
+                getTopActivity().stopService(new Intent( getTopActivity().getApplicationContext(), FaceInfoService.class));
                 Output.navigatorActivity(CameraActivity.class);
                 break;
             case 23:
@@ -213,10 +217,10 @@ public class ActionManager {
                 checkWaitAction(Integer.parseInt(actionItem.getParameter()));
                 break;
             case 24:
-                SerialControlManager.newInstance().armLeftTurnDown(30);
+                SerialControlManager.newInstance().armLeftTurnDown(50);
                 break;
             case 25:
-                SerialControlManager.newInstance().armRightTurnDown(30);
+                SerialControlManager.newInstance().armRightTurnDown(50);
                 break;
         }
         checkFinish();

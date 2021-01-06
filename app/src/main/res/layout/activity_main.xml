@@ -32,22 +32,22 @@
                     android:layout_width="0dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:src="@drawable/main_business"/>
+                    android:src="@drawable/icon_antaides"/>
                 <ImageView
-                    android:id="@+id/temperature"
+                    android:id="@+id/lineup"
                     android:layout_margin="10dp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/main_temperature"/>
+                    android:src="@drawable/icon_crossdoor"/>
 
                 <ImageView
-                    android:id="@+id/explain"
+                    android:id="@+id/identify"
                     android:layout_margin="10dp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/main_explain"/>
+                    android:src="@drawable/main_identify"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,31 +63,47 @@
                     android:src="@drawable/main_face"/>
 
                 <ImageView
-                    android:id="@+id/lineup"
+                    android:id="@+id/temperature"
+
                     android:layout_margin="10dp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/main_lineup"/>
+                    android:src="@drawable/main_temperature"/>
                 <ImageView
-                    android:id="@+id/identify"
+                    android:id="@+id/iv_more"
+
+
                     android:layout_margin="10dp"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:layout_height="match_parent"
-                    android:src="@drawable/main_identify"/>
+                    android:src="@drawable/icon_more"/>
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1">
-            <ImageView
-                android:id="@+id/iv_more"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="35dp"
+                android:layout_gravity="center_horizontal"
+                android:text="点击引领"
+                android:gravity="center"
+                android:textColor="@color/white"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/action_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:src="@drawable/main_more"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/icon_action_bg"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -112,7 +128,7 @@
             android:layout_marginRight="@dimen/main_text_size"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="请用'你好，安安'唤醒我，您可以对我说:''你叫什么名字？''''今天天气如何？''"
+            android:text="请用'你好，安安'唤醒我，您可以对我说:''介绍一下安泰''''今天天气如何？''"
             android:textColor="@color/white"
             android:textSize="35sp" />
 

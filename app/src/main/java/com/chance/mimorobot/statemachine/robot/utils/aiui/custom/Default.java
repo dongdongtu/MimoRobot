@@ -15,6 +15,7 @@ import com.chance.mimorobot.helper.RobotFunctionSettings;
 import com.chance.mimorobot.manager.SerialControlManager;
 import com.chance.mimorobot.manager.SlamManager;
 import com.chance.mimorobot.model.AiuiResultEntity;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.statemachine.robot.Output;
 import com.chance.mimorobot.statemachine.robot.utils.aiui.constants.AiuiConstants;
 import com.chance.mimorobot.statemachine.robot.utils.aiui.constants.MoveActionConstants;
@@ -31,6 +32,8 @@ import cn.chuangze.robot.aiuilibrary.AIUIWrapper;
 import cn.chuangze.robot.serial.api.SerialControl;
 import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
+
+import static com.blankj.utilcode.util.ActivityUtils.getTopActivity;
 
 
 /**
@@ -404,6 +407,7 @@ public class Default {
                     Output.speak(textAnswer);
                     return;
                 }
+                getTopActivity().stopService(new Intent( getTopActivity().getApplicationContext(), FaceInfoService.class));
                 Output.navigatorActivity(CameraActivity.class);
                 break;
 
@@ -411,6 +415,7 @@ public class Default {
                 if (ActivityUtils.getTopActivity() instanceof CameraActivity) {
                     ((CameraActivity) ActivityUtils.getTopActivity()).takeShot();
                 } else {
+                    getTopActivity().stopService(new Intent( getTopActivity().getApplicationContext(), FaceInfoService.class));
                     Output.navigatorActivity(CameraActivity.class);
                 }
                 break;

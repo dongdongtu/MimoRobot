@@ -18,6 +18,8 @@ import com.chance.mimorobot.model.MapResponse;
 import com.chance.mimorobot.model.SemanticModel;
 import com.chance.mimorobot.model.TempRequestModel;
 import com.chance.mimorobot.retrofit.model.AIUIResponse;
+import com.chance.mimorobot.retrofit.model.BaseModel;
+import com.chance.mimorobot.retrofit.model.GetActionListResponse;
 
 import java.util.List;
 
@@ -192,4 +194,26 @@ public interface RobotServer {
      */
     @POST("api/RobotQueueRecord/Upload")
     Observable<BaseResponseModel> uploadLineUp(@Body LineUpRequestModel lineUpRequestModel);
+
+
+    /**
+     * 获取地图点动作列表
+     * @param RobotNo
+     * @return
+     */
+    @GET("api/RobotPad/GetBlindingListOnlyMap")
+    Observable<GetActionListResponse> getActionList(@Query("RobotNo")String  RobotNo);
+
+    /**
+     * 执行动作
+     * @param actionid
+     * @param yituid
+     * @param type
+     * @param RobotNo
+     * @return
+     */
+    @GET("api/RobotPad/ExcuteActions")
+    Observable<BaseModel> doAction(@Query("actionid")int actionid, @Query("yituid")int yituid, @Query("type")int type, @Query("RobotNo")String RobotNo);
+
+
 }

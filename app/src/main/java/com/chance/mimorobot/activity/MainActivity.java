@@ -1,13 +1,13 @@
 package com.chance.mimorobot.activity;
 
 import android.Manifest;
-import android.app.admin.ConnectEvent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,9 +22,9 @@ import com.arcsoft.face.enums.RuntimeABI;
 import com.chance.mimorobot.BaseActivity;
 import com.chance.mimorobot.MyApplication;
 import com.chance.mimorobot.R;
+import com.chance.mimorobot.adapter.ActionRecycleViewAdapter;
 import com.chance.mimorobot.constant.Constant;
 import com.chance.mimorobot.constant.Globle;
-import com.chance.mimorobot.control.SpeechModule;
 import com.chance.mimorobot.manager.SerialControlManager;
 import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.manager.SlamManager;
@@ -33,6 +33,9 @@ import com.chance.mimorobot.model.InitRequest;
 import com.chance.mimorobot.model.MapListResponse;
 import com.chance.mimorobot.mqtt.MqttCoreService;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.retrofit.model.ActionItemModel;
+import com.chance.mimorobot.retrofit.model.BaseModel;
+import com.chance.mimorobot.retrofit.model.GetActionListResponse;
 import com.chance.mimorobot.service.DownLoadMapService;
 import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.service.FaceUpdateService;
@@ -45,8 +48,6 @@ import com.chance.mimorobot.utils.SystemUtils;
 import com.chance.mimorobot.widget.WaveView;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.xuexiang.xupdate.XUpdate;
-import com.xuexiang.xupdate._XUpdate;
-import com.xuexiang.xupdate.utils.UpdateUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -59,6 +60,8 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -74,10 +77,8 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-import static com.chance.mimorobot.mqtt.MqttCoreService.ACTION_REV_DATA;
 
-
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ActionRecycleViewAdapter.OnActionItemClick {
 
     private final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.tv_speak)
@@ -85,7 +86,9 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.wave_speak)
     WaveView waveSpeak;
     @BindView(R.id.iv_iv_mic)
-    ImageView ivIvMic;
+    ImageView IvMic;
+    @BindView(R.id.action_list)
+    RecyclerView actionList;
 
     private boolean isFirst = true;
     private Intent intentService;
@@ -98,15 +101,14 @@ public class MainActivity extends BaseActivity {
     ImageView temperature;
     @BindView(R.id.lineup)
     ImageView lineup;
-    @BindView(R.id.explain)
-    ImageView explain;
+
     @BindView(R.id.identify)
     ImageView identify;
     @BindView(R.id.iv_more)
     ImageView ivMore;
     private AIUIWrapper aiuiWrapper;
 
-//    SpeechModule speechControl;
+    //    SpeechModule speechControl;
     boolean libraryExists = true;
     // Demo 所需的动态库文件
     private static final String[] LIBRARIES = new String[]{
@@ -125,7 +127,11 @@ public class MainActivity extends BaseActivity {
             Manifest.permission.READ_PHONE_STATE
     };
 
-    private int mapid=-1;
+    private int mapid = -1;
+
+    private List<ActionItemModel> listData;
+
+    private ActionRecycleViewAdapter actionRecycleViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +140,9 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 //        requestPermissions();
         SlamManager.getInstance().init(getApplicationContext());
+        IntentFilter intentFilter = new IntentFilter("INIT_MAP");
+        registerReceiver(broadcastReceiver, intentFilter);
+
         if (!libraryExists) {
             Log.e("TAG", getString(R.string.library_not_found));
         } else {
@@ -149,10 +158,14 @@ public class MainActivity extends BaseActivity {
     private void init() {
 //        ((MyApplication)getApplication()).initDir();
 //        speechControl = SpeechModule.getInstance();
+        listData = new ArrayList<>();
+        actionRecycleViewAdapter = new ActionRecycleViewAdapter(listData, this);
+        actionRecycleViewAdapter.setOnActionItemClick(this::onClick);
+        actionList.setLayoutManager(new GridLayoutManager(this, 1));
+        actionList.setAdapter(actionRecycleViewAdapter);
         aiuiWrapper = AIUIWrapper.getInstance(getApplicationContext());
         initApi();
-        IntentFilter intentFilter=new IntentFilter("INIT_MAP");
-        registerReceiver(broadcastReceiver,intentFilter);
+
     }
 
     @Override
@@ -163,9 +176,12 @@ public class MainActivity extends BaseActivity {
                 startWave();
             } else {
                 stopWave();
-                setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
+                setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
             }
             isFirst = false;
+        }
+        if (!Globle.robotId.equals("-1")) {
+            getActionList(Globle.robotId);
         }
     }
 
@@ -177,9 +193,10 @@ public class MainActivity extends BaseActivity {
             public void accept(InitModel initModel) throws Exception {
                 Log.e(TAG, initModel.getMsg() + "   initApi");
                 if (initModel.getCode() == 200) {
-                    mapid=initModel.getMapid();
-                    Globle.robotId = initModel.getRobotNo();
                     SlamwareAgent.getNewInstance().connectTo("192.168.11.1");
+                    mapid = initModel.getMapid();
+                    Globle.robotId = initModel.getRobotNo();
+                    getActionList(initModel.getRobotNo());
                     XUpdate.newBuild(MainActivity.this)
                             .updateUrl("http://47.110.149.187:10031/api/RobotInit/GetNewAndroidVesion?RobotNo=" + Globle.robotId + "&IsTest=0")
                             .updateParser(new CustomUpdateParser(SystemUtils.getAppVersionCode(MainActivity.this))) //设置自定义的版本更新解析器
@@ -189,12 +206,14 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void accept(Long aLong) throws Exception {
                             Log.e(TAG, "startService");
-                            intentService = new Intent(MainActivity.this, MqttCoreService.class);
-                            startService(intentService);
-                            startUpdateFaceService();
+                            if (!Globle.robotId.equals("-1")) {
+                                intentService = new Intent(MainActivity.this, MqttCoreService.class);
+                                startService(intentService);
+                                startUpdateFaceService();
+                            }
                         }
                     });
-                    Log.e(TAG, "getMapid ="+initModel.getMapid());
+                    Log.e(TAG, "getMapid =" + initModel.getMapid());
 
 
                 } else {
@@ -220,6 +239,25 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    public void getActionList(String riobotid) {
+        ApiManager.getInstance().getRobotServer().getActionList(riobotid)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<GetActionListResponse>() {
+                    @Override
+                    public void accept(GetActionListResponse getActionListResponse) throws Exception {
+                        if (getActionListResponse.getCode() == 200) {
+                            listData.clear();
+                            listData.addAll(getActionListResponse.getData());
+                            actionRecycleViewAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+    }
 
     /**
      * 根据唤醒角度计算麦克风波束号
@@ -266,11 +304,10 @@ public class MainActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(ConnectedEvent event) {
-        Log.e(TAG,"mapid     = "+mapid);
-        Intent intent=new Intent("INIT_MAP");
+        Log.e(TAG, "mapid     = " + mapid);
+        Intent intent = new Intent("INIT_MAP");
         sendBroadcast(intent);
     }
-
 
 
     public void startUpdateFaceService() {
@@ -325,7 +362,7 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {
-                            Log.e(TAG, "MOK ");
+//                            Log.e(TAG, "MOK ");
                             startService(new Intent(MainActivity.this, FaceInfoService.class));
 //                            show(getString(R.string.active_success));
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
@@ -401,7 +438,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void accept(Throwable throwable) throws Exception {
                 Toasty.warning(MainActivity.this, "获取地图出错", Toast.LENGTH_SHORT).show();
-                Flowable.timer(2,TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                Flowable.timer(2, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(Long aLong) throws Exception {
                         getMapDetail(mapId);
@@ -414,7 +451,7 @@ public class MainActivity extends BaseActivity {
 
     public void startWave() {
         Log.e(TAG, "startWave");
-        ivIvMic.setVisibility(View.GONE);
+        IvMic.setVisibility(View.GONE);
         waveSpeak.setVisibility(View.VISIBLE);
         waveSpeak.startAnim();
 //        waveSpeak.setVolume(30);
@@ -426,33 +463,56 @@ public class MainActivity extends BaseActivity {
 
     public void stopWave() {
         waveSpeak.stopAnim();
-        ivIvMic.setVisibility(View.VISIBLE);
+        IvMic.setVisibility(View.VISIBLE);
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.lineup, R.id.explain, R.id.identify, R.id.iv_more})
+    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.lineup, R.id.identify, R.id.iv_more, R.id.iv_iv_mic})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
-                startActivity(new Intent(MainActivity.this, BusinessActivity.class));
+                if (!Globle.robotId.equals("-1"))
+                    ApiManager.getInstance().getRobotServer().doAction(10, 16, 1, Globle.robotId)
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<BaseModel>() {
+                                @Override
+                                public void accept(BaseModel baseModel) throws Exception {
+
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+
+                                }
+                            });
                 break;
             case R.id.face:
+                stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
                 break;
             case R.id.temperature:
+                stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, TempActivity.class));
                 break;
             case R.id.lineup:
-                startActivity(new Intent(MainActivity.this, LineUpAcitivity.class));
+                stopService(new Intent(MainActivity.this, FaceInfoService.class));
+                startActivity(new Intent(MainActivity.this, OpenDoorActivity.class));
                 break;
-            case R.id.explain:
-                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
-                break;
+//            case R.id.explain:
+//                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
+//                break;
             case R.id.identify:
                 startActivity(new Intent(MainActivity.this, IdentifyActivity.class));
                 break;
             case R.id.iv_more:
                 startActivity(new Intent(MainActivity.this, MoreItemActivity.class));
+                break;
+            case R.id.iv_iv_mic:
+                if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_speech), true)) {
+                    startWave();
+                    aiuiWrapper.wakeUp(0);
+                    serialControlManager.setBeam(1);
+                }
                 break;
         }
     }
@@ -484,8 +544,8 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals("INIT_MAP")){
-                Log.e(TAG, " mapid ==      "+SharedPreferencesManager.newInstance().getMapID() );
+            if (action.equals("INIT_MAP")) {
+                Log.e(TAG, " mapid ==      " + SharedPreferencesManager.newInstance().getMapID());
                 if (mapid == -1) {
                     Log.e(TAG, " mapid =-1");
                     SharedPreferencesManager.newInstance().setMapID(-1);
@@ -502,4 +562,21 @@ public class MainActivity extends BaseActivity {
 
 
     };
+
+    @Override
+    public void onClick(int position) {
+        ApiManager.getInstance().getRobotServer().doAction(listData.get(position).getId(), listData.get(position).getYituid(), listData.get(position).getType(), Globle.robotId)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<BaseModel>() {
+                    @Override
+                    public void accept(BaseModel baseModel) throws Exception {
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+    }
 }

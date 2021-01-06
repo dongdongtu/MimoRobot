@@ -41,6 +41,8 @@ public class MqttCoreService extends Service {
 
     public static final String ACTION_SEND_DATA = "ACTION_SEND_DATA";
     public static final String EXTRAS_SEND_DATA = "EXTRAS_SEND_DATA";
+    public static final String ACTION_SEND_DATA_PAD = "ACTION_SEND_DATA_PAD";
+    public static final String EXTRAS_SEND_DATA_PAD = "EXTRAS_SEND_DATA_PAD";
     public static final String ACTION_REV_DATA = "ACTION_REV_DATA";
     public static final String EXTRAS_REV_DATA = "EXTRAS_REV_DATA";
 
@@ -55,7 +57,7 @@ public class MqttCoreService extends Service {
 
     boolean flag = true;
 
-    String subcribeTopic, publishTopic;
+    String subcribeTopic, publishTopic, publishTopicPad;
 
     public MqttCoreService() {
     }
@@ -73,6 +75,7 @@ public class MqttCoreService extends Service {
         registerReceiver();
         subcribeTopic = "/robot/" + Globle.robotId;
         publishTopic = "/platform" ;
+        publishTopicPad="/pad";
         Log.e(TAG, "Topic:" + subcribeTopic + " " + publishTopic);
         new ConnThread().start();
     }
@@ -182,6 +185,15 @@ public class MqttCoreService extends Service {
                 String data = intent.getStringExtra(EXTRAS_SEND_DATA);
                 try {
                     mqttConnect.publish(publishTopic,data );
+//                    Log.e(TAG,"MQTT 发送数据:" + data);
+                } catch (Exception e) {
+
+                }
+            }
+            if (ACTION_SEND_DATA_PAD.equals(action)){
+                String data = intent.getStringExtra(EXTRAS_SEND_DATA_PAD);
+                try {
+                    mqttConnect.publish(publishTopicPad,data );
 //                    Log.e(TAG,"MQTT 发送数据:" + data);
                 } catch (Exception e) {
 

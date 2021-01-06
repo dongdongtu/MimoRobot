@@ -29,13 +29,12 @@ public class WelcomeActivity extends BaseActivity {
         setContentView(R.layout.activity_welcome);
         requestPermissions();
         ((MyApplication)getApplication()).initDir();
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-            Flowable.timer(15, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+            Flowable.timer(45, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                 @Override
                 public void accept(Long aLong) throws Exception {
 

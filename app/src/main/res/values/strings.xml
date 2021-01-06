@@ -76,7 +76,7 @@
     <string name="summary_facewake">机器人通过人脸唤醒</string>
     <string name="summary_irneed">需要机器人具备人体感应功能</string>
 
-
+    <string name="summary_speech">语音对话模式</string>
     <string name="title_activity_settings">设  置</string>
     <string name="version">版  本</string>
     <string name="info">基本信息</string>
@@ -91,6 +91,7 @@
 
     <string name="wake_turn">语音唤醒时转身</string>
     <string name="speaker">发言人</string>
+    <string name="speech_continue">持续对话</string>
 
     <!-- Strings related to Settings -->
     <string name="pref_key_robot_name">robot_name</string>
@@ -115,6 +116,8 @@
     <string name="pref_key_wakeup_fixed_time">wakeup_fixed_time</string>
     <string name="pref_key_wakeup_fixed_content">wakeup_fixed_content</string>
 
+
+    <string name="pref_key_speech">speech</string>
 
     <string name="default_speaker_params">xiaoyan</string>
     <string name="category_title_tts">语音合成</string>

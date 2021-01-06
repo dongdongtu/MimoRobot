@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="@dimen/wave_height_size"
+        android:layout_marginBottom="@dimen/wave_height_size"
+        android:layout_marginRight="@dimen/wave_height_size"
+        android:background="@drawable/identify_main_shape">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+            <TextureView
+                android:id="@+id/single_camera_texture_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.chance.mimorobot.arcface.widget.FaceRectView
+                android:id="@+id/single_camera_face_rect_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_idcard"
+                android:background="@drawable/identify_shape"
+                android:gravity="center"
+                android:layout_width="300dp"
+                android:layout_height="180dp"
+                android:textSize="45dp"
+                android:text="身份证放置区"
+                />
+
+            <ImageView
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dp"
+                android:id="@+id/iv_img"
+                android:src="@drawable/touxiang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="30sp"
+                android:layout_marginTop="30dp"/>
+            <TextView
+                android:id="@+id/tv_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="30sp"
+                android:layout_marginTop="30dp"/>
+            <TextView
+                android:id="@+id/tv_gender"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="24sp"
+                android:textColor="#444444"
+                android:layout_margin="5dp"
+                android:text=""/>
+            <TextView
+                android:id="@+id/tv_nature"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="24sp"
+                android:textColor="#444444"
+                android:layout_margin="5dp"
+                android:text=""/>
+            <TextView
+                android:id="@+id/tv_idnum"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="28sp"
+                android:textColor="#444444"
+                android:layout_margin="5dp"
+                android:text=""/>
+            <TextView
+                android:id="@+id/tv_address"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="24sp"
+                android:textColor="#444444"
+                android:layout_margin="5dp"
+                android:text=""/>
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="24sp"
+                android:textColor="#444444"
+                android:layout_margin="5dp"
+                android:text=""/>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

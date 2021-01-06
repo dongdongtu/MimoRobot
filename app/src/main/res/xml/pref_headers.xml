@@ -25,7 +25,7 @@
         android:title="@string/nav" />
     <header
         android:fragment="com.chance.mimorobot.activity.SettingActivity$TestPreferenceFragment"
-        android:icon="@drawable/ic_setting_map"
+        android:icon="@drawable/ic_setting_test1"
         android:title="@string/test" />
     <header
         android:fragment="com.chance.mimorobot.activity.SettingActivity$AboutPreferenceFragment"

@@ -141,7 +141,9 @@ public class SerialControlManager {
      *头左转
      */
     public void headTurnLeft(int time){
+
         headghor=headghor+time;
+        Log.e(TAG,"TIME="+time+" headghor="+headghor);
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -160,6 +162,7 @@ public class SerialControlManager {
      */
     public void headTurnRight(int time){
         headghor=headghor-time;
+        Log.e(TAG,"TIME="+time+" headghor="+headghor);
         byte[] sd = new byte[10];
         sd[0] = (byte) 0xAA;
         sd[1] = (byte) 0xBB;
@@ -383,9 +386,9 @@ public class SerialControlManager {
         sd[3] = (byte) 0x04;//命令
         sd[4] = (byte) 0x01;//灯号
         sd[5] = (byte) 0x00;//R 关闭
-        sd[6] = (byte) 0x05;//R 开庆
+        sd[6] = (byte) 0x00;//R 开庆
         sd[7] = (byte) 0x00;//G 关闭
-        sd[8] = (byte) 0x00;//G 开启
+        sd[8] = (byte) 0x05;//G 开启
         sd[9] = (byte) 0x00;//B 关闭
         sd[10] = (byte) 0x00;//B 开启
         sd[11] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]^ sd[9]^ sd[10]);
@@ -403,9 +406,9 @@ public class SerialControlManager {
         sd[5] = (byte) 0x00;//R 关闭
         sd[6] = (byte) 0x00;//R 开庆
         sd[7] = (byte) 0x00;//G 关闭
-        sd[8] = (byte) 0x05;//G 开启
+        sd[8] = (byte) 0x00;//G 开启
         sd[9] = (byte) 0x00;//B 关闭
-        sd[10] = (byte) 0x00;//B 开启
+        sd[10] = (byte) 0x05;//B 开启
         sd[11] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]^ sd[9]^ sd[10]);
         serialPort.send(sd);
     }
@@ -418,11 +421,11 @@ public class SerialControlManager {
         sd[3] = (byte) 0x04;//命令
         sd[4] = (byte) 0x01;//灯号
         sd[5] = (byte) 0x00;//R 关闭
-        sd[6] = (byte) 0x00;//R 开庆
+        sd[6] = (byte) 0x05;//R 开庆
         sd[7] = (byte) 0x00;//G 关闭
         sd[8] = (byte) 0x00;//G 开启
         sd[9] = (byte) 0x00;//B 关闭
-        sd[10] = (byte) 0x05;//B 开启
+        sd[10] = (byte) 0x00;//B 开启
         sd[11] = (byte) (byte) (sd[0] ^ sd[1]^ sd[2]^ sd[3]^ sd[4] ^ sd[5] ^ sd[6] ^ sd[7] ^ sd[8]^ sd[9]^ sd[10]);
         serialPort.send(sd);
     }
@@ -492,6 +495,9 @@ public class SerialControlManager {
                 break;
             case 0x08:
                 iTouchAction.temp((((data[4]&0xff)*255)+(data[5]&0xff)),((((data[6]&0xff)*255))+(data[7]&0xff))/100);
+                break;
+            case 0x0E://人体感应
+
                 break;
         }
     }

@@ -9,7 +9,7 @@ public class Globle {
     /**
      * 机器人名字
      */
-    public static String ROBOT_NAME = "奇奇";
+    public static String ROBOT_NAME = "安安";
     /**
      * 机器人ID
      */

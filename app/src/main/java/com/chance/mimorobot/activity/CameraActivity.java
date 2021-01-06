@@ -52,6 +52,7 @@ import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.model.BaseResponseModel;
 import com.chance.mimorobot.model.TempRequestModel;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.service.FaceUpdateService;
 import com.chance.mimorobot.statemachine.robot.Output;
 import com.chance.mimorobot.utils.ImageTools;
@@ -83,7 +84,7 @@ public class CameraActivity extends TitleBarActivity implements ViewTreeObserver
     CircleImageView ivPicture;
     @BindView(R.id.tv_camera_text)
     TextView tvCameraText;
-    private String TAG = TempActivity.class.getSimpleName();
+    private String TAG = CameraActivity.class.getSimpleName();
 
 
     /**
@@ -305,6 +306,8 @@ public class CameraActivity extends TitleBarActivity implements ViewTreeObserver
         }
 
         FaceServer.getInstance().unInit();
+        startService(new Intent(CameraActivity.this, FaceInfoService.class));
+
         super.onDestroy();
     }
 
@@ -636,14 +639,18 @@ public class CameraActivity extends TitleBarActivity implements ViewTreeObserver
                 public void accept(Long aLong) throws Exception {
                     if (vx < 0) {
                         Log.e(TAG, "vx=" + vx + ",vy=" + vy);
-                        SerialControlManager.newInstance().headTurnLeft(5);
+                        SerialControlManager.newInstance().headTurnLeft(3);
                     } else if (vx > 0) {
                         Log.e(TAG, "vx=" + vx + ",vy=" + vy);
-                        SerialControlManager.newInstance().headTurnRight(5);
+                        SerialControlManager.newInstance().headTurnRight(3);
                     }
                 }
             });
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }

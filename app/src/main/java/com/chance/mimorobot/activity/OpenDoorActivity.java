@@ -2,6 +2,7 @@ package com.chance.mimorobot.activity;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
@@ -13,12 +14,10 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.ErrorInfo;
-import com.arcsoft.face.Face3DAngle;
 import com.arcsoft.face.FaceEngine;
 import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.GenderInfo;
@@ -48,12 +47,17 @@ import com.chance.mimorobot.db.entity.FaceEntity;
 import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.model.BaseResponseModel;
 import com.chance.mimorobot.model.FaceRequestModel;
+import com.chance.mimorobot.model.IDCardModel;
 import com.chance.mimorobot.retrofit.ApiManager;
 import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.statemachine.robot.Output;
+import com.chance.mimorobot.utils.ImageTools;
+import com.hdos.usbdevice.publicSecurityIDCardLib;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +66,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
 import butterknife.BindView;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -72,9 +77,20 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObserver.OnGlobalLayoutListener{
-
-    private final String TAG = FaceDiscernActivity.class.getSimpleName();
+public class OpenDoorActivity extends TitleBarActivity implements ViewTreeObserver.OnGlobalLayoutListener {
+    @BindView(R.id.tv_idcard)
+    TextView tvIdcard;
+    @BindView(R.id.tv_gender)
+    TextView tvGender;
+    @BindView(R.id.tv_nature)
+    TextView tvNature;
+    @BindView(R.id.tv_idnum)
+    TextView tvIdnum;
+    @BindView(R.id.tv_address)
+    TextView tvAddress;
+    @BindView(R.id.tv_date)
+    TextView tvDate;
+    private String TAG = OpenDoorActivity.class.getSimpleName();
     /**
      * 相机预览显示的控件，可为SurfaceView或TextureView
      */
@@ -154,7 +170,6 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
     private CompositeDisposable delayFaceTaskCompositeDisposable = new CompositeDisposable();
 
 
-
     /**
      * 活体检测的开关
      */
@@ -164,6 +179,20 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
      * 识别阈值
      */
     private static final float SIMILAR_THRESHOLD = 0.7F;
+
+
+    private publicSecurityIDCardLib iDCardDevice;
+
+    private Bitmap bitmap;
+    byte[] BmpFile = new byte[38556];
+
+    public static boolean isStop = false;
+    private int ret = 0;
+
+    String pkName;
+
+    public static boolean isStart = false;
+    private int state = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +210,8 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         //本地人脸库初始化
         FaceServer.getInstance().init(this);
-
+        pkName = this.getPackageName();
+        iDCardDevice = new publicSecurityIDCardLib(OpenDoorActivity.this);
         initView();
     }
 
@@ -192,7 +222,7 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
 
     @Override
     int getContentLayoutId() {
-        return R.layout.activity_facediscern;
+        return R.layout.activity_opendoor;
     }
 
     @Override
@@ -201,13 +231,14 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
         initEngine();
         initCamera();
     }
+
     /**
      * 初始化引擎
      */
     private void initEngine() {
         ftEngine = new FaceEngine();
         ftInitCode = ftEngine.init(this, DetectMode.ASF_DETECT_MODE_VIDEO, SharedPreferencesManager.newInstance().getFtOrient(),
-                16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT| FaceEngine.ASF_AGE | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS );
+                16, MAX_DETECT_NUM, FaceEngine.ASF_FACE_DETECT | FaceEngine.ASF_AGE | FaceEngine.ASF_FACE3DANGLE | FaceEngine.ASF_GENDER | FaceEngine.ASF_LIVENESS);
 
         frEngine = new FaceEngine();
         frInitCode = frEngine.init(this, DetectMode.ASF_DETECT_MODE_IMAGE, DetectFaceOrientPriority.ASF_OP_0_ONLY,
@@ -281,9 +312,10 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
             faceHelper.release();
             faceHelper = null;
         }
-
+        isStop = true;
+        if(iDCardDevice != null)  iDCardDevice.closeDevice();
         FaceServer.getInstance().unInit();
-        startService(new Intent(FaceDiscernActivity.this, FaceInfoService.class));
+        startService(new Intent(OpenDoorActivity.this, FaceInfoService.class));
 
         super.onDestroy();
     }
@@ -307,12 +339,12 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
                     Integer liveness = livenessMap.get(requestId);
                     //不做活体检测的情况，直接搜索
                     if (!livenessDetect) {
-                        Log.i(TAG,"searchFace");
+                        Log.i(TAG, "searchFace");
                         searchFace(faceFeature, requestId);
                     }
                     //活体检测通过，搜索特征
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
-                        Log.i(TAG,"searchFace1");
+                        Log.i(TAG, "searchFace1");
                         searchFace(faceFeature, requestId);
                     }
                     //活体检测未出结果，或者非活体，延迟执行该函数
@@ -557,21 +589,21 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
 
 //                        Log.i(TAG, "onNext: fr search get result  = " + System.currentTimeMillis() + " trackId = " + requestId + "  similar = " + compareResult.getSimilar());
                         if (compareResult.getSimilar() > SIMILAR_THRESHOLD) {
-                            Log.i(TAG,"compareResult1");
+                            Log.i(TAG, "compareResult1");
                             boolean isAdded = false;
                             if (compareResultList == null) {
                                 requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
 //                                faceHelper.setName(requestId, "VISITOR " + requestId);
                                 return;
                             }
-                            Log.i(TAG,"compareResult2");
+                            Log.i(TAG, "compareResult2");
                             for (CompareResult compareResult1 : compareResultList) {
                                 if (compareResult1.getTrackId() == requestId) {
                                     isAdded = true;
                                     break;
                                 }
                             }
-                            Log.i(TAG,"compareResult3");
+                            Log.i(TAG, "compareResult3");
                             if (!isAdded) {
                                 //对于多人脸搜索，假如最大显示数量为 MAX_DETECT_NUM 且有新的人脸进入，则以队列的形式移除
                                 if (compareResultList.size() >= MAX_DETECT_NUM) {
@@ -583,13 +615,13 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
                                 compareResultList.add(compareResult);
 //                                adapter.notifyItemInserted(compareResultList.size() - 1);
                             }
-                            Log.i(TAG,"compareResult4"+compareResult.getUserName());
+                            Log.i(TAG, "compareResult4" + compareResult.getUserName());
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
-                            if (DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique()!=null){
-                                Log.e(TAG,"compareResult.getUserName()");
-                                FaceEntity faceEntity=DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique();
+                            if (DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique() != null) {
+                                Log.e(TAG, "compareResult.getUserName()");
+                                FaceEntity faceEntity = DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique();
                                 File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResult.getUserName() + FaceServer.IMG_SUFFIX);
-                                Glide.with(FaceDiscernActivity.this)
+                                Glide.with(OpenDoorActivity.this)
                                         .load(imgFile)
                                         .into(ivImg);
                                 tvName.setText(faceEntity.getName());
@@ -620,8 +652,8 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
     }
 
 
-    public void uploadFace(FaceEntity faceEntity){
-        FaceRequestModel faceRequestModel=new FaceRequestModel();
+    public void uploadFace(FaceEntity faceEntity) {
+        FaceRequestModel faceRequestModel = new FaceRequestModel();
         faceRequestModel.setFaceid(faceEntity.getFaceid());
         faceRequestModel.setName(faceEntity.getName());
         faceRequestModel.setRobotno(Globle.robotId);
@@ -637,7 +669,6 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
             }
         });
     }
-
 
 
     /**
@@ -711,8 +742,8 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
             List<LivenessInfo> faceLivenessInfoList = new ArrayList<>();
             int ageCode = ftEngine.getAge(ageInfoList);
             int genderCode = ftEngine.getGender(genderInfoList);
-            if ((ageCode | genderCode ) != ErrorInfo.MOK) {
-                Log.e(TAG,ageCode+"  "+genderCode);
+            if ((ageCode | genderCode) != ErrorInfo.MOK) {
+                Log.e(TAG, ageCode + "  " + genderCode);
                 return;
             }
             drawInfoList.add(new DrawInfo(drawHelper.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
@@ -801,5 +832,161 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
                         delayFaceTaskCompositeDisposable.remove(disposable);
                     }
                 });
+    }
+
+
+    /**
+     * 获取身份证阅读器状态
+     */
+    private void getSAMStatus() {
+        try {
+            ret = iDCardDevice.getSAMStatus();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        if (ret == 0x90) {
+            state = 1;
+        } else {
+            Flowable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                @Override
+                public void accept(Long aLong) throws Exception {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            iDCardDevice = new publicSecurityIDCardLib(OpenDoorActivity.this);
+                            getSAMStatus();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getSAMStatus();
+        Flowable.timer(3, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                if (state == 1) {
+                    isStart = true;
+                    getIDDate();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isStart = false;
+        isStop=true;
+    }
+
+
+    public void getIDDate() {
+
+        String[] decodeInfo = new String[13];
+        Arrays.fill(BmpFile, (byte) 0x00);
+        if (iDCardDevice == null) {
+            iDCardDevice = new publicSecurityIDCardLib(OpenDoorActivity.this);
+        }
+//				ret =iDCardDevice.readBaseMsgToStr(pkName,BmpFile,FpMsg,name,sex,nation, birth, address, IDNo, Department,
+//						EffectDate, ExpireDate);
+        try {
+            ret = iDCardDevice.PICC_Reader_ForeignerIDCard(decodeInfo, BmpFile, pkName);
+
+            if (ret < 0) {
+                Log.e("TAG", "读卡错误，原因：" + decodeInfo[12] + isStop);
+                if (!isStop) {
+                    getSAMStatus();
+                    Flowable.timer(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Long>() {
+                        @Override
+                        public void accept(Long aLong) throws Exception {
+                            getIDDate();
+                        }
+                    });
+                } else {
+                    isStop = false;
+                    return;
+                }
+//                return;
+            } else if (ret == 0) {
+                isStart = false;
+                isStop = false;
+                int[] colors = iDCardDevice.convertByteToColor(BmpFile);
+//                showString("读取成功");
+//                        showString("中华人民共和国居民身份证" );
+//                        showString("姓名：" + decodeInfo[0] + "\n" + "性别：" + decodeInfo[1] + "\n" + "民族：" + decodeInfo[2] + "\n"
+//                                + "出生日期：" + decodeInfo[3] + "\n" + "地址：" + decodeInfo[4] + "\n" + "身份号码：" + decodeInfo[5] + "\n"
+//                                + "签发机关：" + decodeInfo[6] + "\n" + "有效期限：" + decodeInfo[7] + "-" + decodeInfo[8] + "\n"
+//                                + decodeInfo[9] + "\n");
+
+                Bitmap bm = Bitmap.createBitmap(colors, 102, 126, Bitmap.Config.ARGB_8888);
+
+                bitmap = Bitmap.createScaledBitmap(bm,
+                        (int) (102 * 2), (int) (126 * 2), false);
+
+                tvName.setText("姓名：" + decodeInfo[0]);
+                tvGender.setText("性别：" + decodeInfo[1]);
+                tvNature.setText("民族：" + decodeInfo[2]);
+                tvIdnum.setText("身份证号码：" + decodeInfo[5]);
+                tvAddress.setText("签发机关：" + decodeInfo[6]);
+                tvDate.setText("有效期限：" + decodeInfo[7] + "-" + decodeInfo[8]);
+                ivImg.setImageBitmap(bitmap);
+                IDCardModel idCardModel = new IDCardModel();
+                idCardModel.setRobotNo(Globle.robotId);
+                idCardModel.setName(decodeInfo[0].trim());
+                idCardModel.setSex(decodeInfo[1].trim());
+                idCardModel.setNation(decodeInfo[2].trim());
+                idCardModel.setBirthday(decodeInfo[3].trim());
+                idCardModel.setVisaAuthority(decodeInfo[6].trim());
+                idCardModel.setAddress(decodeInfo[4].trim());
+                idCardModel.setTermOfValidityB(decodeInfo[7].trim());
+                idCardModel.setTermOfValidityE(decodeInfo[8].trim());
+                idCardModel.setIDCard(decodeInfo[5].trim());
+                idCardModel.setPicFromIDCard(ImageTools.convertIconToString(bitmap));
+                ApiManager.getInstance().getRobotServer().postIDcard(idCardModel).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<BaseResponseModel>() {
+                    @Override
+                    public void accept(BaseResponseModel baseResponseModel) throws Exception {
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+
+
+            } else if (ret == 1) {
+                isStop = false;
+                isStart = false;
+                int[] colors = iDCardDevice.convertByteToColor(BmpFile);
+                Bitmap bm = Bitmap.createBitmap(colors, 102, 126, Bitmap.Config.ARGB_8888);
+                Bitmap bm1 = Bitmap.createScaledBitmap(bm,
+                        (int) (102 * 2), (int) (126 * 2), false); //这里你可以自定义它的大小
+            } else {
+                isStop = false;
+                getSAMStatus();
+                Flowable.timer(1, TimeUnit.SECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        getIDDate();
+                    }
+                });
+            }
+
+
+        } catch (UnsupportedEncodingException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
