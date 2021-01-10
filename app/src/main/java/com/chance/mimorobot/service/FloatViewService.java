@@ -18,6 +18,9 @@ import android.widget.Toast;
 
 import com.chance.mimorobot.R;
 import com.chance.mimorobot.manager.ActionManager;
+import com.chance.mimorobot.widget.neteasedisc.service.MusicService;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class FloatViewService extends Service {
     private static final String TAG = "FloatViewService";
@@ -79,6 +82,7 @@ public class FloatViewService extends Service {
             {
                 Intent intent=new Intent("ACTION_STOP");
                 sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(MusicService.ACTION_OPT_MUSIC_PAUSE));
                 ActionManager.getInstance().cancelAction();
             }
         });

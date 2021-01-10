@@ -487,4 +487,5 @@ public class ActionManager {
         SlamwareAgent.getNewInstance().cancelAllActions();
         Log.i(TAG, "机器人执行任务取消已中止:");
     }
+
 }

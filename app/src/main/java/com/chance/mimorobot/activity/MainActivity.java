@@ -6,8 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -89,6 +94,8 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     ImageView IvMic;
     @BindView(R.id.action_list)
     RecyclerView actionList;
+    @BindView(R.id.hello)
+    TextView hello;
 
     private boolean isFirst = true;
     private Intent intentService;
@@ -142,7 +149,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         SlamManager.getInstance().init(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter("INIT_MAP");
         registerReceiver(broadcastReceiver, intentFilter);
-
+        serialControlManager=SerialControlManager.newInstance();
         if (!libraryExists) {
             Log.e("TAG", getString(R.string.library_not_found));
         } else {
@@ -152,6 +159,9 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         }
         libraryExists = checkSoFile(LIBRARIES);
 //        ((MyApplication)getApplication()).initDir();
+        SpannableStringBuilder style = new SpannableStringBuilder("请用'你好，安安'唤醒我");
+        style.setSpan(new ForegroundColorSpan(Color.RED), 3, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        hello.setText(style);
         init();
     }
 
@@ -176,9 +186,14 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 startWave();
             } else {
                 stopWave();
-                setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+                setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
             }
             isFirst = false;
+        }
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_speech), true)) {
+            setHelloText1();
+        } else {
+            setHelloText2();
         }
         if (!Globle.robotId.equals("-1")) {
             getActionList(Globle.robotId);
@@ -459,6 +474,19 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
 
     public void setSpeakText(String text) {
         tvSpeak.setText(text);
+    }
+
+    public void setHelloText1() {
+        SpannableStringBuilder style = new SpannableStringBuilder("请用'你好，安安'唤醒我");
+        style.setSpan(new ForegroundColorSpan(Color.RED), 3, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        hello.setText(style);
+    }
+
+    public void setHelloText2() {
+        SpannableStringBuilder style = new SpannableStringBuilder("请用'你好，安安'或点击麦克风唤醒我");
+        style.setSpan(new ForegroundColorSpan(Color.RED), 3, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        style.setSpan(new ForegroundColorSpan(Color.RED), 10, 15, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        hello.setText(style);
     }
 
     public void stopWave() {
