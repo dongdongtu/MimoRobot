@@ -176,6 +176,8 @@ public class SettingActivity extends AppCompatPreferenceActivity {
 
         EditTextPreference speedPreference, pitchPreference, asrLengthPreference;
 
+        SwitchPreference speechPreference;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -214,7 +216,8 @@ public class SettingActivity extends AppCompatPreferenceActivity {
             pitchPreference.setSummary(pitch);
             pitchPreference.setOnPreferenceChangeListener(this);
 
-
+            speechPreference=(SwitchPreference) findPreference(getString(R.string.pref_key_speech));
+            speechPreference.setOnPreferenceChangeListener(this);
 
         }
 
@@ -260,6 +263,8 @@ public class SettingActivity extends AppCompatPreferenceActivity {
                 return setValue(getActivity(), pitchPreference, newValue.toString());
             } else if (preference == asrLengthPreference) {
                 preference.setSummary(newValue.toString());
+            }else if (preference == speechPreference) {
+                AIUIWrapper.getInstance(getActivity()).speechParams(Boolean.parseBoolean(newValue.toString()));
             }
             return true;
         }

@@ -1,5 +1,6 @@
 package com.chance.mimorobot.activity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -41,6 +42,7 @@ import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.model.BaseResponseModel;
 import com.chance.mimorobot.model.TempRequestModel;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.utils.ImageTools;
 
 import java.io.IOException;
@@ -251,6 +253,7 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
         }
 
         FaceServer.getInstance().unInit();
+        startService(new Intent(TempActivity.this, FaceInfoService.class));
         super.onDestroy();
     }
 

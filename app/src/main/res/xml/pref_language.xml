@@ -29,6 +29,16 @@
             android:maxLength="3"
             android:title="@string/tts_pitch" />
 
+
+            <SwitchPreference
+                android:defaultValue="true"
+                android:key="@string/pref_key_speech"
+                android:summary="@string/summary_speech"
+                android:title="@string/speech_continue" />
+
+
+
+
     </PreferenceCategory>
 
 </PreferenceScreen>

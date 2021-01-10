@@ -7,7 +7,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -86,6 +92,8 @@ public class MainActivity extends BaseActivity {
     WaveView waveSpeak;
     @BindView(R.id.iv_iv_mic)
     ImageView ivIvMic;
+    @BindView(R.id.hello)
+    TextView hello;
 
     private boolean isFirst = true;
     private Intent intentService;
@@ -134,6 +142,9 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 //        requestPermissions();
         SlamManager.getInstance().init(getApplicationContext());
+        IntentFilter intentFilter = new IntentFilter("INIT_MAP");
+        registerReceiver(broadcastReceiver, intentFilter);
+        serialControlManager=SerialControlManager.newInstance();
         if (!libraryExists) {
             Log.e("TAG", getString(R.string.library_not_found));
         } else {
@@ -151,8 +162,7 @@ public class MainActivity extends BaseActivity {
 //        speechControl = SpeechModule.getInstance();
         aiuiWrapper = AIUIWrapper.getInstance(getApplicationContext());
         initApi();
-        IntentFilter intentFilter=new IntentFilter("INIT_MAP");
-        registerReceiver(broadcastReceiver,intentFilter);
+
     }
 
     @Override
@@ -163,10 +173,16 @@ public class MainActivity extends BaseActivity {
                 startWave();
             } else {
                 stopWave();
-                setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'你叫什么名字？''今天天气如何？'");
+                setSpeakText("您可以对我说:'你叫什么名字？''今天天气如何？'");
             }
             isFirst = false;
         }
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_speech), true)) {
+            setHelloText1();
+        } else {
+            setHelloText2();
+        }
+
     }
 
     private void initApi() {
@@ -177,9 +193,9 @@ public class MainActivity extends BaseActivity {
             public void accept(InitModel initModel) throws Exception {
                 Log.e(TAG, initModel.getMsg() + "   initApi");
                 if (initModel.getCode() == 200) {
-                    mapid=initModel.getMapid();
-                    Globle.robotId = initModel.getRobotNo();
                     SlamwareAgent.getNewInstance().connectTo("192.168.11.1");
+                    mapid = initModel.getMapid();
+                    Globle.robotId = initModel.getRobotNo();
                     XUpdate.newBuild(MainActivity.this)
                             .updateUrl("http://47.110.149.187:10031/api/RobotInit/GetNewAndroidVesion?RobotNo=" + Globle.robotId + "&IsTest=0")
                             .updateParser(new CustomUpdateParser(SystemUtils.getAppVersionCode(MainActivity.this))) //设置自定义的版本更新解析器
@@ -189,9 +205,11 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void accept(Long aLong) throws Exception {
                             Log.e(TAG, "startService");
-                            intentService = new Intent(MainActivity.this, MqttCoreService.class);
-                            startService(intentService);
-                            startUpdateFaceService();
+                            if (!Globle.robotId.equals("-1")) {
+                                intentService = new Intent(MainActivity.this, MqttCoreService.class);
+                                startService(intentService);
+                                startUpdateFaceService();
+                            }
                         }
                     });
                     Log.e(TAG, "getMapid ="+initModel.getMapid());
@@ -424,6 +442,19 @@ public class MainActivity extends BaseActivity {
         tvSpeak.setText(text);
     }
 
+    public void setHelloText1() {
+        SpannableStringBuilder style = new SpannableStringBuilder("请用'你好，奇奇'唤醒我");
+        style.setSpan(new ForegroundColorSpan(Color.RED), 3, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        hello.setText(style);
+    }
+
+    public void setHelloText2() {
+        SpannableStringBuilder style = new SpannableStringBuilder("请用'你好，奇奇'或点击麦克风唤醒我");
+        style.setSpan(new ForegroundColorSpan(Color.RED), 3, 8, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        style.setSpan(new ForegroundColorSpan(Color.RED), 10, 15, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+        hello.setText(style);
+    }
+
     public void stopWave() {
         waveSpeak.stopAnim();
         ivIvMic.setVisibility(View.VISIBLE);
@@ -437,9 +468,11 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, BusinessActivity.class));
                 break;
             case R.id.face:
+                stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
                 break;
             case R.id.temperature:
+                stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, TempActivity.class));
                 break;
             case R.id.lineup:
@@ -453,6 +486,13 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.iv_more:
                 startActivity(new Intent(MainActivity.this, MoreItemActivity.class));
+                break;
+            case R.id.iv_iv_mic:
+                if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_key_speech), true)) {
+                    startWave();
+                    aiuiWrapper.wakeUp(0);
+                    serialControlManager.setBeam(1);
+                }
                 break;
         }
     }

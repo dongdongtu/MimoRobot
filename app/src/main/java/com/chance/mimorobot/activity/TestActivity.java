@@ -1,6 +1,7 @@
 package com.chance.mimorobot.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,6 +31,18 @@ public class TestActivity extends TitleBarActivity {
     SeekBar headver;
     @BindView(R.id.headhor)
     SeekBar headhor;
+    @BindView(R.id.tv_headver)
+    TextView tvHeadver;
+    @BindView(R.id.tv_headhor)
+    TextView tvHeadhor;
+    @BindView(R.id.tv_lefthand)
+    TextView tvLefthand;
+    @BindView(R.id.tv_righthand)
+    TextView tvRighthand;
+    @BindView(R.id.tv_left_xia_hand)
+    TextView tvLeftXiaHand;
+    @BindView(R.id.tv_right_xia_hand)
+    TextView tvRightXiaHand;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +54,7 @@ public class TestActivity extends TitleBarActivity {
         headhor.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getHeadghor() > i) {
-                    SerialControlManager.newInstance().headTurnRight(SerialControlManager.newInstance().getHeadghor() - i);
-                } else if (SerialControlManager.newInstance().getHeadghor() < i) {
-                    SerialControlManager.newInstance().headTurnLeft(i - SerialControlManager.newInstance().getHeadghor());
-                }
+                tvHeadhor.setText("头部左右:"+i);
             }
 
             @Override
@@ -55,17 +64,19 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                Log.e("tag", seekBar.getProgress() + "   =ssss");
+                if (SerialControlManager.newInstance().getHeadghor() > (seekBar.getProgress() - 20)) {
+                    SerialControlManager.newInstance().headTurnRight(SerialControlManager.newInstance().getHeadghor() - (seekBar.getProgress() - 20));
+                } else if (SerialControlManager.newInstance().getHeadghor() < (seekBar.getProgress() - 20)) {
+                    SerialControlManager.newInstance().headTurnLeft((seekBar.getProgress() - 20) - SerialControlManager.newInstance().getHeadghor());
+                }
             }
         });
         headver.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getHeadver() > i) {
-                    SerialControlManager.newInstance().headTurnDown(SerialControlManager.newInstance().getHeadver() - i);
-                } else if (SerialControlManager.newInstance().getHeadver() < i) {
-                    SerialControlManager.newInstance().headTurnUp(i - SerialControlManager.newInstance().getHeadver());
-                }
+                tvHeadver.setText("头部上下:"+i);
+
             }
 
             @Override
@@ -75,17 +86,17 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (SerialControlManager.newInstance().getHeadver() > (seekBar.getProgress() - 8)) {
+                    SerialControlManager.newInstance().headTurnDown(SerialControlManager.newInstance().getHeadver() - (seekBar.getProgress() - 8));
+                } else if (SerialControlManager.newInstance().getHeadver() < (seekBar.getProgress() -8)) {
+                    SerialControlManager.newInstance().headTurnUp((seekBar.getProgress() -8) - SerialControlManager.newInstance().getHeadver());
+                }
             }
         });
         lefthand.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getLefthand() > i) {
-                    SerialControlManager.newInstance().armLeftTurnDown(SerialControlManager.newInstance().getLefthand() - i);
-                } else if (SerialControlManager.newInstance().getLefthand() < i) {
-                    SerialControlManager.newInstance().armLeftTurnUp(i - SerialControlManager.newInstance().getLefthand());
-                }
+                tvLefthand.setText("左臂："+i);
             }
 
             @Override
@@ -95,17 +106,17 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (SerialControlManager.newInstance().getLefthand() > (seekBar.getProgress() - 50)) {
+                    SerialControlManager.newInstance().armLeftTurnDown(SerialControlManager.newInstance().getLefthand() - (seekBar.getProgress() - 50));
+                } else if (SerialControlManager.newInstance().getLefthand() < (seekBar.getProgress() - 50)) {
+                    SerialControlManager.newInstance().armLeftTurnUp((seekBar.getProgress() - 50) - SerialControlManager.newInstance().getLefthand());
+                }
             }
         });
         righthand.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getRighthand() > i) {
-                    SerialControlManager.newInstance().armRightTurnDown(SerialControlManager.newInstance().getRighthand() - i);
-                } else if (SerialControlManager.newInstance().getRighthand() < i) {
-                    SerialControlManager.newInstance().armRightTurnUp(i - SerialControlManager.newInstance().getRighthand());
-                }
+                tvRighthand.setText("右臂："+i);
             }
 
             @Override
@@ -115,18 +126,18 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (SerialControlManager.newInstance().getRighthand() >  (seekBar.getProgress() - 50)) {
+                    SerialControlManager.newInstance().armRightTurnDown(SerialControlManager.newInstance().getRighthand() -  (seekBar.getProgress() - 50));
+                } else if (SerialControlManager.newInstance().getRighthand() <  (seekBar.getProgress() - 50)) {
+                    SerialControlManager.newInstance().armRightTurnUp( (seekBar.getProgress() - 50) - SerialControlManager.newInstance().getRighthand());
+                }
             }
         });
 
         rightXiaHand.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getRightxiahand() > i) {
-                    SerialControlManager.newInstance().armRightXiaTurnDown(SerialControlManager.newInstance().getRightxiahand() - i);
-                } else if (SerialControlManager.newInstance().getRightxiahand() < i) {
-                    SerialControlManager.newInstance().armRightXiaTurnUp(i - SerialControlManager.newInstance().getRightxiahand());
-                }
+                tvRightXiaHand.setText("右下臂+"+i);
             }
 
             @Override
@@ -136,17 +147,18 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (SerialControlManager.newInstance().getRightxiahand() > seekBar.getProgress() ) {
+                    SerialControlManager.newInstance().armRightXiaTurnDown(SerialControlManager.newInstance().getRightxiahand() - seekBar.getProgress() );
+                } else if (SerialControlManager.newInstance().getRightxiahand() < seekBar.getProgress() ) {
+                    SerialControlManager.newInstance().armRightXiaTurnUp(seekBar.getProgress()  - SerialControlManager.newInstance().getRightxiahand());
+                }
             }
         });
         leftXiaHand.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if (SerialControlManager.newInstance().getLeftxiahand() > i) {
-                    SerialControlManager.newInstance().armLeftXiaTurnDown(SerialControlManager.newInstance().getLeftxiahand() - i);
-                } else if (SerialControlManager.newInstance().getLeftxiahand() < i) {
-                    SerialControlManager.newInstance().armLeftXiaTurnUp(i - SerialControlManager.newInstance().getLeftxiahand());
-                }
+                tvLeftXiaHand.setText("左下臂+"+i);
+
             }
 
             @Override
@@ -156,7 +168,11 @@ public class TestActivity extends TitleBarActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                if (SerialControlManager.newInstance().getLeftxiahand() > seekBar.getProgress()) {
+                    SerialControlManager.newInstance().armLeftXiaTurnDown(SerialControlManager.newInstance().getLeftxiahand() -seekBar.getProgress());
+                } else if (SerialControlManager.newInstance().getLeftxiahand() < seekBar.getProgress()) {
+                    SerialControlManager.newInstance().armLeftXiaTurnUp(seekBar.getProgress()- SerialControlManager.newInstance().getLeftxiahand());
+                }
             }
         });
     }
@@ -175,7 +191,8 @@ public class TestActivity extends TitleBarActivity {
                 break;
         }
     }
-    public void startMove(){
+
+    public void startMove() {
 
     }
 }

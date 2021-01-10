@@ -1,5 +1,6 @@
 package com.chance.mimorobot.activity;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -48,6 +49,7 @@ import com.chance.mimorobot.manager.SharedPreferencesManager;
 import com.chance.mimorobot.model.BaseResponseModel;
 import com.chance.mimorobot.model.FaceRequestModel;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.statemachine.robot.Output;
 
 import java.io.File;
@@ -162,6 +164,7 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
      * 识别阈值
      */
     private static final float SIMILAR_THRESHOLD = 0.7F;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -280,6 +283,8 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
         }
 
         FaceServer.getInstance().unInit();
+        startService(new Intent(FaceDiscernActivity.this, FaceInfoService.class));
+
         super.onDestroy();
     }
 
@@ -756,6 +761,10 @@ public class FaceDiscernActivity extends TitleBarActivity implements ViewTreeObs
     }
 
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 
     /**
      * 延迟 FAIL_RETRY_INTERVAL 重新进行人脸识别
