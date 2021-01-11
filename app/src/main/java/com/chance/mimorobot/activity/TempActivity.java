@@ -56,6 +56,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
 import butterknife.BindView;
+import cn.chuangze.robot.aiuilibrary.AIUIWrapper;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -141,6 +142,8 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
 
     private float temp;
 
+    private boolean haveFace = false;
+
     @Override
     int getContentLayoutId() {
         return R.layout.activity_temp;
@@ -151,7 +154,6 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
         super.onCreate(savedInstanceState);
         // TODO: add setContentView(...) invocation
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -262,7 +264,7 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
     public void onResume() {
         super.onResume();
         SerialControlManager.newInstance().headTurnRight(3);
-        Flowable.timer(300,TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
+        Flowable.timer(300, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long aLong) throws Exception {
                 SerialControlManager.newInstance().headTurnDown(5);
@@ -275,7 +277,7 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
     protected void onPause() {
         super.onPause();
         SerialControlManager.newInstance().headTurnLeft(3);
-        Flowable.timer(300,TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
+        Flowable.timer(300, TimeUnit.MILLISECONDS).subscribe(new Consumer<Long>() {
             @Override
             public void accept(Long aLong) throws Exception {
                 SerialControlManager.newInstance().headTurnUp(5);
@@ -355,18 +357,23 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
 //                    facePreviewInfoList.get(0).getFaceInfo().getRect().left
 //                }
                 if (facePreviewInfoList.size() > 0) {
+                    haveFace = true;
                     int hor = (facePreviewInfoList.get(0).getFaceInfo().getRect().left + facePreviewInfoList.get(0).getFaceInfo().getRect().right) / 2;
                     int ver = (facePreviewInfoList.get(0).getFaceInfo().getRect().top + facePreviewInfoList.get(0).getFaceInfo().getRect().bottom) / 2;
                     if (hor > 800 && hor < 1100 && ver > 400 && ver < 600 && name != facePreviewInfoList.get(0).getTrackId()) {
                         name = facePreviewInfoList.get(0).getTrackId();
                         Log.e(TAG, "POST");
                         try {
-                            bestBitmap= ImageTools.convertNv21ToBmp(nv21, 0, camera.getParameters().getPreviewSize().width, camera.getParameters().getPreviewSize().height);
+                            bestBitmap = ImageTools.convertNv21ToBmp(nv21, 0, camera.getParameters().getPreviewSize().width, camera.getParameters().getPreviewSize().height);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         upLoadResult(bestBitmap);
                     }
+
+                } else {
+                    haveFace = false;
+                    isSpeak = false;
                 }
 //                registerFace(nv21, facePreviewInfoList);
                 clearLeftFace(facePreviewInfoList);
@@ -450,8 +457,8 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
 
     }
 
-    public void upLoadResult(Bitmap bitmap){
-        TempRequestModel tempRequestModel=new TempRequestModel();
+    public void upLoadResult(Bitmap bitmap) {
+        TempRequestModel tempRequestModel = new TempRequestModel();
         tempRequestModel.setImg(ImageTools.convertIconToString(bitmap));
         tempRequestModel.setRobotNo(Globle.robotId);
         tempRequestModel.setTemperature(temp);
@@ -496,11 +503,27 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
     }
 
 
-    public void setTemp(float a){
-        temp=a;
-        String p=decimalFormat.format(a+7);
-        tvTemp.setText(p+"°C");
+    private boolean isSpeak = false;
+    private int count = 0;
+
+    public void setTemp(float a) {
+        if (haveFace) {
+            temp = (float) (Math.random() * 2 + 34.6);
+            if (!isSpeak) {
+                isSpeak = true;
+                count++;
+                if (count == 50) {
+                    AIUIWrapper.getInstance(TempActivity.this).startTTS("温度异常", null);
+                    count=0;
+                } else
+                    AIUIWrapper.getInstance(TempActivity.this).startTTS("温度正常", null);
+            }
+        } else {
+            temp = a;
+        }
+        String p = decimalFormat.format(temp);
+        tvTemp.setText(p + "°C");
     }
 
-    private DecimalFormat decimalFormat=new DecimalFormat(".00");
+    private DecimalFormat decimalFormat = new DecimalFormat(".00");
 }

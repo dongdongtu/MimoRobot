@@ -119,6 +119,16 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/hello"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="请用'你好，安安'唤醒我"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="35sp"
+            />
+        <TextView
             android:id="@+id/tv_speak"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -128,7 +138,7 @@
             android:layout_marginRight="@dimen/main_text_size"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="请用'你好，安安'唤醒我，您可以对我说:''介绍一下安泰''''今天天气如何？''"
+            android:text="您可以对我说:''介绍安泰国际广场''''今天天气如何？''"
             android:textColor="@color/white"
             android:textSize="35sp" />
 

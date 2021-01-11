@@ -80,6 +80,7 @@ import com.chance.mimorobot.utils.HardwareInfo;
 import com.chance.mimorobot.utils.ScreenUtils;
 import com.chance.mimorobot.utils.SystemUtils;
 import com.chance.mimorobot.widget.CustomStatusBarView;
+import com.chance.mimorobot.widget.neteasedisc.service.MusicService;
 import com.danikula.videocache.HttpProxyCacheServer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
@@ -115,6 +116,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import cn.chuangze.robot.aiuilibrary.AIUIWrapper;
 import cn.chuangze.robot.aiuilibrary.listener.STTEventCallBack;
 import cn.chuangze.robot.aiuilibrary.params.SpeechParams;
@@ -215,6 +217,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
         serialControlManager = SerialControlManager.newInstance();
         serialControlManager.setDeviceEventListener(this);
         serialControlManager.setFace(7);
+        serialControlManager.lightREDControl();
         setSpeakerParams();
 
 
@@ -424,7 +427,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
 
         Log.e(TAG, "onResultAIUI1");
         requestAIUIServer(result);
-//        if ((currentActivity instanceof MainActivity) && !TextUtils.isEmpty(aiuiResultEntity.getText())) {
+//        if ((currentActivity instanceof MainActivity) && !TextHighLightUtil.isEmpty(aiuiResultEntity.getText())) {
 //            ((MainActivity) currentActivity).setSpeakText(aiuiResultEntity.getText());
 //        }
     }
@@ -455,13 +458,15 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
         if (currentActivity instanceof MainActivity) {
             ((MainActivity) currentActivity).stopWave();
             if (sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
-                ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+                ((MainActivity) currentActivity).setHelloText1();
+                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
             } else {
-                ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'或者点击麦克风唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+                ((MainActivity) currentActivity).setHelloText2();
+                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
             }
         }
         if (!isActoin && sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
-            aiuiWrapper.startTTS("我去休息了", null);
+            aiuiWrapper.startTTS("进入休眠，有事再来叫我啊", null);
         }
 
     }
@@ -697,6 +702,13 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                             case 4:
                                 aiuiWrapper.speechParams(!sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true));
                                 break;
+                            case 5:
+                                Intent intentstop=new Intent("ACTION_STOP");
+                                sendBroadcast(intentstop);
+                                ActionManager.getInstance().cancelAction();
+                                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(new Intent(MusicService.ACTION_OPT_MUSIC_PAUSE));
+
+                                break;
                         }
                     }
                 } catch (JSONException e) {
@@ -859,7 +871,8 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                             StateMachineManager.getInstance().inputAiuiResult(result);
                         }
                         if (!sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
-                            ((MainActivity) currentActivity).setSpeakText("请用'你好，安安'或者点击麦克风唤醒我，您可以对我说:'介绍一下安泰''今天天气如何？'");
+                            ((MainActivity) currentActivity).setHelloText2();
+                            ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
                         }
                     }
                 }, new Consumer<Throwable>() {
