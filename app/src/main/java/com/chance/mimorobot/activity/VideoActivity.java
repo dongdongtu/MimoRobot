@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.chance.mimorobot.MyApplication;
 import com.chance.mimorobot.R;
 import com.chance.mimorobot.widget.neteasedisc.model.MusicData;
 import com.shuyu.gsyvideoplayer.GSYVideoManager;
@@ -102,11 +103,13 @@ public class VideoActivity extends TitleBarActivity {
     protected void onPause() {
         super.onPause();
         videoPlayer.onVideoPause();
+        ((MyApplication)getApplication()).setVideo(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        ((MyApplication)getApplication()).setVideo(true);
         videoPlayer.onVideoResume();
     }
 

@@ -195,6 +195,16 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
     protected SharedPreferences sharedPreferences;
     private boolean isActoin = false;
 
+
+    public boolean isVideo() {
+        return isVideo;
+    }
+
+    public void setVideo(boolean video) {
+        isVideo = video;
+    }
+
+    private boolean isVideo=false;
     @Override
     public void onCreate() {
         super.onCreate();

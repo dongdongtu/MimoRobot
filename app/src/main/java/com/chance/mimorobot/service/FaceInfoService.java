@@ -643,7 +643,7 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
                                 Log.e(TAG,"compareResult.getUserName()");
                                 FaceEntity faceEntity=DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique();
                                 File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResult.getUserName() + FaceServer.IMG_SUFFIX);
-                                if(!((MyApplication)getApplication()).isActoin()&&!AIUIWrapper.getInstance(FaceInfoService.this).isTTS()){
+                                if(!((MyApplication)getApplication()).isActoin()&&!AIUIWrapper.getInstance(FaceInfoService.this).isTTS()&&!((MyApplication)getApplication()).isVideo()){
                                     AIUIWrapper.getInstance(FaceInfoService.this).startTTS(faceEntity.getSayHelloText(),null);
                                 }
                             }
@@ -668,7 +668,7 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
 
-                            if(!((MyApplication)getApplication()).isActoin()&&!AIUIWrapper.getInstance(FaceInfoService.this).isTTS()){
+                            if(!((MyApplication)getApplication()).isActoin()&&!AIUIWrapper.getInstance(FaceInfoService.this).isTTS()&&!((MyApplication)getApplication()).isVideo()){
                                 AIUIWrapper.getInstance(FaceInfoService.this).startTTS("你好，我能为您做些什么？",null);
                             }
                             Log.i(TAG,"compareResult5"+requestId);

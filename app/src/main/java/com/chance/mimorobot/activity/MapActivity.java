@@ -34,6 +34,7 @@ import com.chance.mimorobot.model.MapPointResponse;
 import com.chance.mimorobot.model.MapResponse;
 import com.chance.mimorobot.model.RobotMap;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.service.DownLoadMapService;
 import com.chance.mimorobot.service.PngIntentService;
 import com.chance.mimorobot.slam.event.ActionStatusGetEvent;
 import com.chance.mimorobot.slam.event.ConnectionLostEvent;
@@ -67,11 +68,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
+import es.dmoral.toasty.Toasty;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -628,7 +632,8 @@ public class MapActivity extends TitleBarActivity {
                 .setNeutralButton("设置地图", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        setMap(robotMap.getId());
+                        getMapDetail(robotMap.getId());
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -659,5 +664,31 @@ public class MapActivity extends TitleBarActivity {
                     }
                 }
         );
+    }
+
+    private void getMapDetail(int mapId) {
+        ApiManager.getInstance().getRobotServer().getMapList(Globle.robotId, mapId)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MapListResponse>() {
+            @Override
+            public void accept(MapListResponse mapListResponse) throws Exception {
+//                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
+
+                SharedPreferencesManager.newInstance().setMapID(mapId);
+                SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
+                DownLoadMapService.startActionFoo(MapActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Toasty.warning(MapActivity.this, "获取地图出错", Toast.LENGTH_SHORT).show();
+                Flowable.timer(2, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        getMapDetail(mapId);
+                    }
+                });
+                throwable.printStackTrace();
+            }
+        });
     }
 }

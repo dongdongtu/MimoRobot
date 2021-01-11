@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.chance.mimorobot.BaseActivity;
 import com.chance.mimorobot.MyApplication;
 import com.chance.mimorobot.R;
 import com.chance.mimorobot.adapter.ActionRecycleViewAdapter;
+import com.chance.mimorobot.adapter.RoomRecycleViewAdapter;
 import com.chance.mimorobot.constant.Constant;
 import com.chance.mimorobot.constant.Globle;
 import com.chance.mimorobot.manager.SerialControlManager;
@@ -47,6 +47,7 @@ import com.chance.mimorobot.service.FaceUpdateService;
 import com.chance.mimorobot.slam.event.ConnectedEvent;
 import com.chance.mimorobot.slam.event.ConnectionLostEvent;
 import com.chance.mimorobot.slam.slamware.SlamwareAgent;
+import com.chance.mimorobot.statemachine.robot.Output;
 import com.chance.mimorobot.update.CustomUpdateParser;
 import com.chance.mimorobot.utils.HardwareInfo;
 import com.chance.mimorobot.utils.SystemUtils;
@@ -82,8 +83,10 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.blankj.utilcode.util.ActivityUtils.getTopActivity;
 
-public class MainActivity extends BaseActivity implements ActionRecycleViewAdapter.OnActionItemClick {
+
+public class MainActivity extends BaseActivity implements ActionRecycleViewAdapter.OnActionItemClick, RoomRecycleViewAdapter.OnActionRoomItemClick {
 
     private final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.tv_speak)
@@ -96,6 +99,12 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     RecyclerView actionList;
     @BindView(R.id.hello)
     TextView hello;
+    @BindView(R.id.room_list)
+    RecyclerView roomList;
+    @BindView(R.id.video_1)
+    TextView video1;
+    @BindView(R.id.video_2)
+    TextView video2;
 
     private boolean isFirst = true;
     private Intent intentService;
@@ -106,8 +115,8 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     ImageView face;
     @BindView(R.id.temperature)
     ImageView temperature;
-    @BindView(R.id.lineup)
-    ImageView lineup;
+//    @BindView(R.id.lineup)
+//    ImageView lineup;
 
     @BindView(R.id.identify)
     ImageView identify;
@@ -137,8 +146,9 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     private int mapid = -1;
 
     private List<ActionItemModel> listData;
-
+    private List<ActionItemModel> listRoomData;
     private ActionRecycleViewAdapter actionRecycleViewAdapter;
+    private RoomRecycleViewAdapter roomRecycleViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +159,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         SlamManager.getInstance().init(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter("INIT_MAP");
         registerReceiver(broadcastReceiver, intentFilter);
-        serialControlManager=SerialControlManager.newInstance();
+        serialControlManager = SerialControlManager.newInstance();
         if (!libraryExists) {
             Log.e("TAG", getString(R.string.library_not_found));
         } else {
@@ -173,9 +183,14 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         actionRecycleViewAdapter.setOnActionItemClick(this::onClick);
         actionList.setLayoutManager(new GridLayoutManager(this, 1));
         actionList.setAdapter(actionRecycleViewAdapter);
+
+        listRoomData = new ArrayList<>();
+        roomRecycleViewAdapter = new RoomRecycleViewAdapter(listRoomData, this);
+        roomRecycleViewAdapter.setOnActionRoomItemClick(this::onRoomClick);
+        roomList.setLayoutManager(new GridLayoutManager(this, 2));
+        roomList.setAdapter(roomRecycleViewAdapter);
         aiuiWrapper = AIUIWrapper.getInstance(getApplicationContext());
         initApi();
-
     }
 
     @Override
@@ -264,6 +279,23 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                             listData.clear();
                             listData.addAll(getActionListResponse.getData());
                             actionRecycleViewAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+        ApiManager.getInstance().getRobotServer().getRoomList(riobotid)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<GetActionListResponse>() {
+                    @Override
+                    public void accept(GetActionListResponse getActionListResponse) throws Exception {
+                        if (getActionListResponse.getCode() == 200) {
+                            listRoomData.clear();
+                            listRoomData.addAll(getActionListResponse.getData());
+                            roomRecycleViewAdapter.notifyDataSetChanged();
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -495,12 +527,12 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.lineup, R.id.identify, R.id.iv_more, R.id.iv_iv_mic})
+    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic,R.id.video_1,R.id.video_2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
                 if (!Globle.robotId.equals("-1"))
-                    ApiManager.getInstance().getRobotServer().doAction(10, 16, 1, Globle.robotId)
+                    ApiManager.getInstance().getRobotServer().doAction(33, 24, 1, Globle.robotId)
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<BaseModel>() {
                                 @Override
@@ -515,17 +547,32 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                             });
                 break;
             case R.id.face:
-                stopService(new Intent(MainActivity.this, FaceInfoService.class));
-                startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
+                ApiManager.getInstance().getRobotServer().doAction(34, 25, 1, Globle.robotId)
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Consumer<BaseModel>() {
+                            @Override
+                            public void accept(BaseModel baseModel) throws Exception {
+
+                            }
+                        }, new Consumer<Throwable>() {
+                            @Override
+                            public void accept(Throwable throwable) throws Exception {
+
+                            }
+                        });
+//                stopService(new Intent(MainActivity.this, FaceInfoService.class));
+//                startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
                 break;
             case R.id.temperature:
                 stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, TempActivity.class));
                 break;
-            case R.id.lineup:
-                stopService(new Intent(MainActivity.this, FaceInfoService.class));
-                startActivity(new Intent(MainActivity.this, OpenDoorActivity.class));
-                break;
+//            case R.id.lineup:
+//                stopService(new Intent(MainActivity.this, FaceInfoService.class));
+//                startActivity(new Intent(MainActivity.this, OpenDoorActivity.class));
+
+
+//            break;
 //            case R.id.explain:
 //                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
 //                break;
@@ -541,6 +588,12 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                     aiuiWrapper.wakeUp(0);
                     serialControlManager.setBeam(1);
                 }
+                break;
+            case R.id.video_1:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/video/%E6%97%A5%E7%85%A7%E4%B8%AD%E5%BF%83.mp4"));
+                break;
+            case R.id.video_2:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/video/safe.mp4"));
                 break;
         }
     }
@@ -594,6 +647,23 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     @Override
     public void onClick(int position) {
         ApiManager.getInstance().getRobotServer().doAction(listData.get(position).getId(), listData.get(position).getYituid(), listData.get(position).getType(), Globle.robotId)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<BaseModel>() {
+                    @Override
+                    public void accept(BaseModel baseModel) throws Exception {
+
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+
+                    }
+                });
+    }
+
+    @Override
+    public void onRoomClick(int position) {
+        ApiManager.getInstance().getRobotServer().doAction(listRoomData.get(position).getId(), listRoomData.get(position).getYituid(), listRoomData.get(position).getType(), Globle.robotId)
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<BaseModel>() {
                     @Override

@@ -216,4 +216,10 @@ public interface RobotServer {
     Observable<BaseModel> doAction(@Query("actionid")int actionid, @Query("yituid")int yituid, @Query("type")int type, @Query("RobotNo")String RobotNo);
 
 
+    /**
+     * 获取户型列表
+     */
+    @GET("api/RobotPad/GetBlindingListOnlyHuXing")
+    Observable<GetActionListResponse> getRoomList(@Query("RobotNo")String  RobotNo);
+
 }
