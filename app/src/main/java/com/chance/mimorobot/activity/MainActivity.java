@@ -1,6 +1,7 @@
 package com.chance.mimorobot.activity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -105,6 +106,8 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     TextView video1;
     @BindView(R.id.video_2)
     TextView video2;
+    @BindView(R.id.room_detail)
+    ImageView roomDetail;
 
     private boolean isFirst = true;
     private Intent intentService;
@@ -150,6 +153,10 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     private ActionRecycleViewAdapter actionRecycleViewAdapter;
     private RoomRecycleViewAdapter roomRecycleViewAdapter;
 
+
+    private Dialog showAlertDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,6 +165,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
 //        requestPermissions();
         SlamManager.getInstance().init(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter("INIT_MAP");
+        intentFilter.addAction("DIALOG_DISPLAY");
         registerReceiver(broadcastReceiver, intentFilter);
         serialControlManager = SerialControlManager.newInstance();
         if (!libraryExists) {
@@ -178,6 +186,12 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     private void init() {
 //        ((MyApplication)getApplication()).initDir();
 //        speechControl = SpeechModule.getInstance();
+        showAlertDialog = new Dialog(this, R.style.Dialog_Fullscreen);
+        showAlertDialog.setContentView(R.layout.dialog_main_show);
+        showAlertDialog.setCancelable(true);
+        showAlertDialog.setCanceledOnTouchOutside(true);
+
+
         listData = new ArrayList<>();
         actionRecycleViewAdapter = new ActionRecycleViewAdapter(listData, this);
         actionRecycleViewAdapter.setOnActionItemClick(this::onClick);
@@ -287,23 +301,23 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
 
                     }
                 });
-        ApiManager.getInstance().getRobotServer().getRoomList(riobotid)
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<GetActionListResponse>() {
-                    @Override
-                    public void accept(GetActionListResponse getActionListResponse) throws Exception {
-                        if (getActionListResponse.getCode() == 200) {
-                            listRoomData.clear();
-                            listRoomData.addAll(getActionListResponse.getData());
-                            roomRecycleViewAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                    }
-                });
+//        ApiManager.getInstance().getRobotServer().getRoomList(riobotid)
+//                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<GetActionListResponse>() {
+//                    @Override
+//                    public void accept(GetActionListResponse getActionListResponse) throws Exception {
+//                        if (getActionListResponse.getCode() == 200) {
+//                            listRoomData.clear();
+//                            listRoomData.addAll(getActionListResponse.getData());
+//                            roomRecycleViewAdapter.notifyDataSetChanged();
+//                        }
+//                    }
+//                }, new Consumer<Throwable>() {
+//                    @Override
+//                    public void accept(Throwable throwable) throws Exception {
+//
+//                    }
+//                });
     }
 
     /**
@@ -429,7 +443,6 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                         if (res == ErrorInfo.MOK) {
                             Log.i(TAG, activeFileInfo.toString());
                         }
-
                     }
 
                     @Override
@@ -527,7 +540,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic,R.id.video_1,R.id.video_2})
+    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2,R.id.room_detail})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
@@ -595,6 +608,9 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
             case R.id.video_2:
                 Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/video/safe.mp4"));
                 break;
+            case R.id.room_detail:
+                startActivity(new Intent(MainActivity.this, RoomDetailActivity.class));
+                break;
         }
     }
 
@@ -637,6 +653,16 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 } else {
                     Log.e(TAG, " mapid =-111");
                     getMapDetail(mapid);
+                }
+            } else if ("DIALOG_DISPLAY".equals(action)) {
+                if (intent.getIntExtra("CODE", 1) == 1) {
+                    if (showAlertDialog != null) {
+                        showAlertDialog.dismiss();
+                    }
+                } else {
+                    if (showAlertDialog != null) {
+                        showAlertDialog.show();
+                    }
                 }
             }
         }

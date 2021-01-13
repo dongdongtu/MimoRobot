@@ -46,7 +46,6 @@ public class ImageActivity extends TitleBarActivity {
     }
 
     public void setContentWithUIUpdate(Intent intent) {
-        Log.e("TAG","SSSS");
         if (!TextUtils.isEmpty(intent.getStringExtra("data"))) {
             String content = intent.getStringExtra("data");
             Log.e("TAG",content);

@@ -514,9 +514,14 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
                 count++;
                 if (count == 50) {
                     AIUIWrapper.getInstance(TempActivity.this).startTTS("温度异常", null);
-                    count=0;
-                } else
-                    AIUIWrapper.getInstance(TempActivity.this).startTTS("温度正常", null);
+                    count = 0;
+                } else {
+                    if (temp<37) {
+                        AIUIWrapper.getInstance(TempActivity.this).startTTS("温度正常", null);
+                    }else{
+                        AIUIWrapper.getInstance(TempActivity.this).startTTS("温度异常", null);
+                    }
+                }
             }
         } else {
             temp = a;

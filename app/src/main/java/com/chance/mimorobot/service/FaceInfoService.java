@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.Camera;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -141,6 +143,31 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
     private Disposable moveDisposable = null;
     private float vx, vy = 0;
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Intent intent=new Intent("DIALOG_DISPLAY");
+            switch (msg.what) {
+                // 根据what的值处理不同操作
+                case 1:
+                    intent.putExtra("CODE",1);
+                    break;
+                case 2:
+                    intent.putExtra("CODE",2);
+                    break;
+            }
+            sendBroadcast(intent);
+        }
+    };
+    private boolean haveFace = false;
+    private Runnable runnable=new Runnable() {
+        @Override
+        public void run() {
+            Intent intent=new Intent("DIALOG_DISPLAY");
+            intent.putExtra("CODE",2);
+            sendBroadcast(intent);
+        }
+    };
     /**
      * 活体检测的开关
      */
@@ -496,6 +523,12 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
 
 
                 if (facePreviewInfoList != null && facePreviewInfoList.size() > 0 && previewSize != null) {
+                    if (!haveFace){
+                        haveFace=true;
+                        handler.removeCallbacks(runnable);
+                        handler.sendEmptyMessage(1);
+                    }
+
                     //跟踪人脸
                     if (facePreviewInfoList.size() > 0) {
                         trackFaceMove(camera, facePreviewInfoList.get(0));
@@ -528,6 +561,10 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
                         }
                     }
                 }else{
+                    if (haveFace){
+                        haveFace=false;
+                        handler.postDelayed(runnable,20000);
+                    }
                     vx =0;
                     vy =0;
                 }
@@ -581,6 +618,8 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
         countMap.put(key, ++value);
         return value;
     }
+
+
     private void searchFace(final FaceFeature frFace, final Integer requestId) {
         Observable
                 .create(new ObservableOnSubscribe<CompareResult>() {

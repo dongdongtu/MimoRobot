@@ -121,6 +121,10 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="landscape"/>
+        <activity android:name=".activity.RoomDetailActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"/>
         <activity android:name=".activity.ExplainActivty"
             android:label="@string/app_name"
             android:launchMode="singleTop"

@@ -10,6 +10,7 @@
     </style>
 
     <style name="TextViewStyle"></style>
+
     <style name="TextViewStyle.WeatherTextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -25,12 +26,12 @@
         <item name="android:textSize">9sp</item>
     </style>
 
-    <style name="neteasa_music_time_seek_bar_sytle"
-        parent="Widget.AppCompat.SeekBar">
+    <style name="neteasa_music_time_seek_bar_sytle" parent="Widget.AppCompat.SeekBar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:thumb">@drawable/ic_seekbar_thumb</item>
     </style>
+
     <style name="netease_toolbar_title" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">17sp</item>
@@ -51,4 +52,10 @@
         <item name="android:layout_marginLeft">20dp</item>
 
     </style>
+
+    <style name="Dialog_Fullscreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
 </resources>
