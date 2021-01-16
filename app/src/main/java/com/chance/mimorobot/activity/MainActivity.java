@@ -39,6 +39,7 @@ import com.chance.mimorobot.model.InitRequest;
 import com.chance.mimorobot.model.MapListResponse;
 import com.chance.mimorobot.mqtt.MqttCoreService;
 import com.chance.mimorobot.retrofit.ApiManager;
+import com.chance.mimorobot.retrofit.model.BaseModel;
 import com.chance.mimorobot.service.DownLoadMapService;
 import com.chance.mimorobot.service.FaceInfoService;
 import com.chance.mimorobot.service.FaceUpdateService;
@@ -461,7 +462,7 @@ public class MainActivity extends BaseActivity {
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.lineup, R.id.explain, R.id.identify, R.id.iv_more})
+    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.lineup, R.id.explain, R.id.identify, R.id.iv_more,R.id.iv_iv_mic})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
@@ -479,7 +480,21 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, LineUpAcitivity.class));
                 break;
             case R.id.explain:
-                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
+//                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
+                if (!Globle.robotId.equals("-1"))
+                    ApiManager.getInstance().getRobotServer().doAction(42, 39, 1, Globle.robotId)
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Consumer<BaseModel>() {
+                                @Override
+                                public void accept(BaseModel baseModel) throws Exception {
+
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+
+                                }
+                            });
                 break;
             case R.id.identify:
                 startActivity(new Intent(MainActivity.this, IdentifyActivity.class));

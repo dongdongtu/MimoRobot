@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="120dp"
         android:layout_marginRight="@dimen/main_margin_size"
         android:layout_marginLeft="@dimen/main_margin_size"
         android:orientation="horizontal"
@@ -98,7 +98,7 @@
         android:layout_marginTop="60dp"
         android:layout_marginRight="@dimen/main_margin_size"
         android:layout_marginBottom="60dp"
-        android:layout_weight="0.9"
+        android:layout_weight="0.6"
         android:background="@drawable/main_shape"
         android:orientation="vertical">
 
@@ -110,7 +110,7 @@
             android:text="请用'你好，安安'唤醒我"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="35sp"
+            android:textSize="30sp"
             />
         <TextView
             android:id="@+id/tv_speak"
@@ -121,10 +121,10 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="@dimen/main_text_size"
             android:layout_weight="1"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:text="您可以对我说:''你叫什么名字？''''今天天气如何？''"
             android:textColor="@color/white"
-            android:textSize="35sp" />
+            android:textSize="30sp" />
 
         <com.chance.mimorobot.widget.WaveView
             android:id="@+id/wave_speak"
