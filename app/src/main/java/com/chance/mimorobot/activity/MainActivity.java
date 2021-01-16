@@ -166,6 +166,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         SlamManager.getInstance().init(getApplicationContext());
         IntentFilter intentFilter = new IntentFilter("INIT_MAP");
         intentFilter.addAction("DIALOG_DISPLAY");
+
         registerReceiver(broadcastReceiver, intentFilter);
         serialControlManager = SerialControlManager.newInstance();
         if (!libraryExists) {
@@ -540,7 +541,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2,R.id.room_detail})
+    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2, R.id.room_detail})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
@@ -661,7 +662,9 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                     }
                 } else {
                     if (showAlertDialog != null) {
-                        showAlertDialog.show();
+                        if (!((MyApplication) getApplication()).isActoin()) {
+                            showAlertDialog.show();
+                        }
                     }
                 }
             }

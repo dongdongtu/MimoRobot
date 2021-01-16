@@ -681,7 +681,7 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
                             if (DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique()!=null){
                                 Log.e(TAG,"compareResult.getUserName()");
                                 FaceEntity faceEntity=DBManager.getInstance().getmDaoSession().getFaceEntityDao().queryBuilder().where(FaceEntityDao.Properties.Faceid.eq(compareResult.getUserName())).unique();
-                                File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResult.getUserName() + FaceServer.IMG_SUFFIX);
+//                                File imgFile = new File(FaceServer.ROOT_PATH + File.separator + FaceServer.SAVE_IMG_DIR + File.separator + compareResult.getUserName() + FaceServer.IMG_SUFFIX);
                                 if(!((MyApplication)getApplication()).isActoin()&&!AIUIWrapper.getInstance(FaceInfoService.this).isTTS()&&!((MyApplication)getApplication()).isVideo()){
                                     AIUIWrapper.getInstance(FaceInfoService.this).startTTS(faceEntity.getSayHelloText(),null);
                                 }
