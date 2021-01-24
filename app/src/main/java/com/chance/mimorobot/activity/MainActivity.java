@@ -482,7 +482,7 @@ public class MainActivity extends BaseActivity {
             case R.id.explain:
 //                startActivity(new Intent(MainActivity.this, ExplainActivty.class));
                 if (!Globle.robotId.equals("-1"))
-                    ApiManager.getInstance().getRobotServer().doAction(42, 39, 1, Globle.robotId)
+                    ApiManager.getInstance().getRobotServer().doAction(44, 41, 1, Globle.robotId)
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<BaseModel>() {
                                 @Override
