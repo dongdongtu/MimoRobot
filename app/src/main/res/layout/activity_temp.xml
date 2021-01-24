@@ -41,13 +41,13 @@
                 android:layout_height="1093dp" />
         </FrameLayout>
 
-        <ImageView
-            android:id="@+id/iv_head"
-            android:layout_width="500dp"
-            android:layout_height="500dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="150dp"
-            android:src="@drawable/icon_head" />
+<!--        <ImageView-->
+<!--            android:id="@+id/iv_head"-->
+<!--            android:layout_width="500dp"-->
+<!--            android:layout_height="500dp"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:layout_marginTop="150dp"-->
+<!--            android:src="@drawable/icon_head" />-->
 
 
     </RelativeLayout>
