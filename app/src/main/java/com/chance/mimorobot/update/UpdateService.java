@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
 
+import com.chance.mimorobot.constant.Globle;
+
 /**
  * 已弃用
  * 版本更新的服务
@@ -61,7 +63,7 @@ public class UpdateService extends Service {
 
         // 设置下载后文件存放的位置
         String apkName = parse.getLastPathSegment();
-        down.setDestinationInExternalPublicDir("Robot/download", apkName);
+        down.setDestinationInExternalPublicDir("/storage/emulated/0/Robot/download", apkName);
 
         // 将下载请求放入队列
         manager.enqueue(down);

@@ -307,7 +307,6 @@ public class CameraActivity extends TitleBarActivity implements ViewTreeObserver
 
         FaceServer.getInstance().unInit();
         startService(new Intent(CameraActivity.this, FaceInfoService.class));
-
         super.onDestroy();
     }
 
