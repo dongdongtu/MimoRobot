@@ -238,7 +238,6 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
             public void accept(InitModel initModel) throws Exception {
                 Log.e(TAG, initModel.getMsg() + "   initApi");
                 if (initModel.getCode() == 200) {
-                    SlamwareAgent.getNewInstance().connectTo("192.168.11.1");
                     mapid = initModel.getMapid();
                     Globle.robotId = initModel.getRobotNo();
                     getActionList(initModel.getRobotNo());
@@ -247,6 +246,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                             .updateParser(new CustomUpdateParser(SystemUtils.getAppVersionCode(MainActivity.this))) //设置自定义的版本更新解析器
                             .update();
                     activeEngine();
+                    SlamwareAgent.getNewInstance().connectTo("192.168.11.1");
                     Flowable.timer(1, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
                         public void accept(Long aLong) throws Exception {
@@ -259,8 +259,6 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                         }
                     });
                     Log.e(TAG, "getMapid =" + initModel.getMapid());
-
-
                 } else {
                     Flowable.timer(10, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                         @Override
