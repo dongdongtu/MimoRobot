@@ -153,7 +153,6 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     private ActionRecycleViewAdapter actionRecycleViewAdapter;
     private RoomRecycleViewAdapter roomRecycleViewAdapter;
 
-
     private Dialog showAlertDialog;
 
 
