@@ -114,8 +114,8 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     TextView textView;
     @BindView(R.id.business)
     ImageView business;
-    @BindView(R.id.face)
-    ImageView face;
+//    @BindView(R.id.face)
+//    ImageView face;
     @BindView(R.id.temperature)
     ImageView temperature;
 //    @BindView(R.id.lineup)
@@ -541,7 +541,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.face, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2, R.id.room_detail})
+    @OnClick({R.id.business, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2, R.id.video_3, R.id.video_4, R.id.room_detail,R.id.room_1,R.id.room_2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
@@ -560,23 +560,23 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                                 }
                             });
                 break;
-            case R.id.face:
-                ApiManager.getInstance().getRobotServer().doAction(34, 25, 1, Globle.robotId)
-                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Consumer<BaseModel>() {
-                            @Override
-                            public void accept(BaseModel baseModel) throws Exception {
-
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(Throwable throwable) throws Exception {
-
-                            }
-                        });
-//                stopService(new Intent(MainActivity.this, FaceInfoService.class));
-//                startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
-                break;
+//            case R.id.face:
+//                ApiManager.getInstance().getRobotServer().doAction(34, 25, 1, Globle.robotId)
+//                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+//                        .subscribe(new Consumer<BaseModel>() {
+//                            @Override
+//                            public void accept(BaseModel baseModel) throws Exception {
+//
+//                            }
+//                        }, new Consumer<Throwable>() {
+//                            @Override
+//                            public void accept(Throwable throwable) throws Exception {
+//
+//                            }
+//                        });
+////                stopService(new Intent(MainActivity.this, FaceInfoService.class));
+////                startActivity(new Intent(MainActivity.this, FaceDiscernActivity.class));
+//                break;
             case R.id.temperature:
                 stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, TempActivity.class));
@@ -604,10 +604,22 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 }
                 break;
             case R.id.video_1:
-                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/video/%E6%97%A5%E7%85%A7%E4%B8%AD%E5%BF%83.mp4"));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%911.mp4"));
                 break;
             case R.id.video_2:
-                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/video/safe.mp4"));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%912.mp4"));
+                break;
+            case R.id.video_3:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%913.mp4"));
+                break;
+            case R.id.video_4:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%914.mp4"));
+                break;
+            case R.id.room_1:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/A%E6%88%B7%E5%9E%8B.mp4"));
+                break;
+            case R.id.room_2:
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/B%E6%88%B7%E5%9E%8B.mp4"));
                 break;
             case R.id.room_detail:
                 startActivity(new Intent(MainActivity.this, RoomDetailActivity.class));
