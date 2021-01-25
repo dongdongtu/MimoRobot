@@ -454,7 +454,6 @@ public class TempActivity extends TitleBarActivity implements ViewTreeObserver.O
             }
         }
 
-
     }
 
     public void upLoadResult(Bitmap bitmap) {

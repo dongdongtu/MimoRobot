@@ -216,7 +216,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 startWave();
             } else {
                 stopWave();
-                setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
+                setSpeakText("您可以对我说:'介绍山水合院''今天天气如何？'");
             }
             isFirst = false;
         }

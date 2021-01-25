@@ -469,10 +469,10 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
             ((MainActivity) currentActivity).stopWave();
             if (sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
                 ((MainActivity) currentActivity).setHelloText1();
-                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
+                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍山水合院''今天天气如何？'");
             } else {
                 ((MainActivity) currentActivity).setHelloText2();
-                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
+                ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍山水合院''今天天气如何？'");
             }
         }
         if (!isActoin && sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
@@ -882,7 +882,7 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                         }
                         if (!sharedPreferences.getBoolean(getString(R.string.pref_key_speech), true)) {
                             ((MainActivity) currentActivity).setHelloText2();
-                            ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍安泰国际广场''今天天气如何？'");
+                            ((MainActivity) currentActivity).setSpeakText("您可以对我说:'介绍山水合院''今天天气如何？'");
                         }
                     }
                 }, new Consumer<Throwable>() {
