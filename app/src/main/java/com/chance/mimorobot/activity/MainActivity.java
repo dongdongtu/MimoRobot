@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -155,6 +156,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
 
     private Dialog showAlertDialog;
 
+    private boolean IsFirstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -364,8 +366,11 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(ConnectedEvent event) {
         Log.e(TAG, "mapid     = " + mapid);
-        Intent intent = new Intent("INIT_MAP");
-        sendBroadcast(intent);
+        if (IsFirstLoad) {
+            IsFirstLoad = false;
+            Intent intent = new Intent("INIT_MAP");
+            sendBroadcast(intent);
+        }
     }
 
 
@@ -487,10 +492,11 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
             @Override
             public void accept(MapListResponse mapListResponse) throws Exception {
 //                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
-
-                SharedPreferencesManager.newInstance().setMapID(mapId);
-                SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
-                DownLoadMapService.startActionFoo(MainActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+                if (mapListResponse.getCode() == 200) {
+                    SharedPreferencesManager.newInstance().setMapID(mapId);
+                    SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
+                    DownLoadMapService.startActionFoo(MainActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+                }
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -646,8 +652,17 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                     SharedPreferencesManager.newInstance().setMapID(-1);
                     SharedPreferencesManager.newInstance().setMapPath("");
                 } else if (SharedPreferencesManager.newInstance().getMapID() == mapid) {
-                    Log.e(TAG, SharedPreferencesManager.newInstance().getMapPath());
-                    SlamManager.getInstance().setMap(SharedPreferencesManager.newInstance().getMapPath());
+
+                    if (TextUtils.isEmpty(SharedPreferencesManager.newInstance().getMapPath())) {
+                        getMapDetail(mapid);
+                    } else {
+                        File file = new File(SharedPreferencesManager.newInstance().getMapPath());
+                        if (file.exists()) {
+                            SlamManager.getInstance().setMap(SharedPreferencesManager.newInstance().getMapPath());
+                        } else {
+                            getMapDetail(mapid);
+                        }
+                    }
                 } else {
                     Log.e(TAG, " mapid =-111");
                     getMapDetail(mapid);
