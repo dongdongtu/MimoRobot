@@ -35,6 +35,7 @@ import com.chance.mimorobot.model.MapResponse;
 import com.chance.mimorobot.model.RobotMap;
 import com.chance.mimorobot.retrofit.ApiManager;
 import com.chance.mimorobot.retrofit.model.BaseModel;
+import com.chance.mimorobot.service.DownLoadMapService;
 import com.chance.mimorobot.service.PngIntentService;
 import com.chance.mimorobot.slam.event.ActionStatusGetEvent;
 import com.chance.mimorobot.slam.event.ConnectionLostEvent;
@@ -55,7 +56,6 @@ import com.google.gson.Gson;
 import com.slamtec.slamware.action.Path;
 import com.slamtec.slamware.geometry.Line;
 import com.slamtec.slamware.robot.LaserScan;
-import com.slamtec.slamware.robot.Location;
 import com.slamtec.slamware.robot.Map;
 import com.slamtec.slamware.robot.Pose;
 import com.slamtec.slamware.sdp.CompositeMapHelper;
@@ -561,34 +561,39 @@ public class MapActivity extends TitleBarActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(RobotLocationGetEvent event) {
-        Pose location = event.getLocation();
-        MapPoint mapPoint = new MapPoint();
-        mapPoint.setX(location.getX());
-        mapPoint.setY(location.getY());
-        mapPoint.setZ(location.getYaw());
-        mapPoint.setPointName(pointname);
+        if (!isHome) {
+            Pose location = event.getLocation();
+            MapPoint mapPoint = new MapPoint();
+            mapPoint.setX(location.getX());
+            mapPoint.setY(location.getY());
+            mapPoint.setZ(location.getYaw());
+            mapPoint.setPointName(pointname);
 
-        ApiManager.getInstance().getRobotServer().postMapPoint(new MapPointRequest(Globle.robotId, SharedPreferencesManager.newInstance().getMapID(), mapPoint))
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MapPointResponse>() {
-                    @Override
-                    public void accept(MapPointResponse mapPointResponse) throws Exception {
-                        if (mapPointResponse.getCode() == 200) {
+            ApiManager.getInstance().getRobotServer().postMapPoint(new MapPointRequest(Globle.robotId, SharedPreferencesManager.newInstance().getMapID(), mapPoint))
+                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<MapPointResponse>() {
+                        @Override
+                        public void accept(MapPointResponse mapPointResponse) throws Exception {
+                            if (mapPointResponse.getCode() == 200) {
 //                            if (listDates != null) {
 //                                listDates.add(mapPointResponse.getPoint());
 //                                mAdapter.notifyDataSetChanged();
 //                            }
-                            pointList.add(mapPointResponse.getPoints().get(0));
-                            explainPointAdapter.setWifiCollection(pointList);
+                                pointList.add(mapPointResponse.getPoints().get(0));
+                                explainPointAdapter.setWifiCollection(pointList);
+                            }
                         }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        Log.e(TAG, throwable.getMessage());
-                        throwable.printStackTrace();
-                    }
-                });
+                    }, new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            Log.e(TAG, throwable.getMessage());
+                            throwable.printStackTrace();
+                        }
+                    });
+        } else {
+            isHome = false;
+            mAgent.setHomePose(event.getLocation());
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -675,7 +680,8 @@ public class MapActivity extends TitleBarActivity {
                 .setNeutralButton("设置地图", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        setMap(robotMap.getId());
+                        getMapDetail(robotMap.getId());
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -706,5 +712,31 @@ public class MapActivity extends TitleBarActivity {
                     }
                 }
         );
+    }
+
+    private void getMapDetail(int mapId) {
+        ApiManager.getInstance().getRobotServer().getMapList(Globle.robotId, mapId)
+                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<MapListResponse>() {
+            @Override
+            public void accept(MapListResponse mapListResponse) throws Exception {
+//                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
+
+                SharedPreferencesManager.newInstance().setMapID(mapId);
+                SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
+                DownLoadMapService.startActionFoo(MapActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Toasty.warning(MapActivity.this, "获取地图出错", Toast.LENGTH_SHORT).show();
+                Flowable.timer(2, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        getMapDetail(mapId);
+                    }
+                });
+                throwable.printStackTrace();
+            }
+        });
     }
 }
