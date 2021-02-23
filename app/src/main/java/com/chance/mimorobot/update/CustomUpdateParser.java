@@ -38,7 +38,7 @@ public class CustomUpdateParser implements IUpdateParser {
             if (result.getCode() == 200 && result.getData().getVersionCode() > currentVersionCode) {
                 hasUpdate = true;
             }
-            Log.e("URL","URL =  "+result.getData().getApkUrl());
+//            Log.e("URL","URL =  "+result.getData().getApkUrl());
             return new UpdateEntity()
                     .setHasUpdate(hasUpdate)
                     .setIsIgnorable(!result.getData().isIsImposed())

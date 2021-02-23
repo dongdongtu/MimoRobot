@@ -124,6 +124,19 @@ public interface RobotServer {
             , @Part("ResolutionX") RequestBody ResolutionX, @Part("ResolutionY") RequestBody ResolutionY
             , @Part() List<MultipartBody.Part> parts);
 
+    /**
+     * 修改地图
+     * @param
+     * @return
+     */
+    @Multipart
+    @POST("api/RobotMap/EditMap")
+    Observable<BaseModel> editMap(@Part("RobotNo") RequestBody RobotNo,@Part("id") RequestBody id, @Part("MapName") RequestBody MapName
+            , @Part("MapDes") RequestBody MapDes, @Part("MapHeight") RequestBody MapHeight, @Part("MapWidth") RequestBody MapWidth
+            , @Part("MapOriginX") RequestBody MapOriginX, @Part("MapOriginY") RequestBody MapOriginY
+            , @Part("ResolutionX") RequestBody ResolutionX, @Part("ResolutionY") RequestBody ResolutionY
+            , @Part() List<MultipartBody.Part> parts);
+
 
     /**
      * 获取地图列表
@@ -221,5 +234,8 @@ public interface RobotServer {
      */
     @GET("api/RobotPad/GetBlindingListOnlyHuXing")
     Observable<GetActionListResponse> getRoomList(@Query("RobotNo")String  RobotNo);
+
+
+
 
 }

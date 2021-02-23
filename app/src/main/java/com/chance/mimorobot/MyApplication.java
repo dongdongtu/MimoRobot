@@ -683,7 +683,9 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
                                 }
                                 break;
                             case 13:
+                                Log.e("MyApplication",data);
                                 isActoin = true;
+                                aiuiWrapper.stopTTS();
                                 VocalSpeakManager.getInstance().sleep();
                                 if (currentActivity instanceof BaseActivity) {
                                     ((BaseActivity) currentActivity).showStop();
@@ -747,13 +749,13 @@ public class MyApplication extends Application implements OnSerialDataCallBack, 
      */
     private void initUpdate() {
         XUpdate.get()
-                .isWifiOnly(true)     //默认设置只在wifi下检查版本更新
+                .isWifiOnly(false)     //默认设置只在wifi下检查版本更新
                 .isGet(true)          //默认设置使用get请求检查版本
                 .isAutoMode(false)    //默认设置非自动模式，可根据具体使用配置
                 .param("VersionCode", UpdateUtils.getVersionCode(this)) //设置默认公共请求参数
                 .param("AppKey", getPackageName())
-                .setApkCacheDir(Globle.DOWNLOAD_PATH)     // 设置下载的缓存目录
-//                .debug(true)
+                .setApkCacheDir("/storage/emulated/0/Robot/download")     // 设置下载的缓存目录
+                .debug(true)
                 .setOnUpdateFailureListener(new OnUpdateFailureListener() {
                     @Override
                     public void onFailure(UpdateError error) {

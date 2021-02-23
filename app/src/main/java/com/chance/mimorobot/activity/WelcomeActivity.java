@@ -37,7 +37,6 @@ public class WelcomeActivity extends BaseActivity {
             Flowable.timer(45, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
                 @Override
                 public void accept(Long aLong) throws Exception {
-
                     if (NetworkHelper.ping()) {
                         startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                         finish();

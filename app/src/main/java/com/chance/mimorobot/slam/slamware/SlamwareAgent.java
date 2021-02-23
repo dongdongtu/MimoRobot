@@ -71,6 +71,9 @@ public class SlamwareAgent {
     private ThreadManager mManager;
     private ThreadManager.ThreadPoolProxy mPoolProxy;
 
+
+
+    private static TaskSetHomePose sTaskSetHomePose;
     private static TaskRecoverLocalization sTaskRecoverLocalization;
     private static TaskConnect sTaskConnect;
     private static TaskCancelAllActions sTaskCancelAllActions;
@@ -150,6 +153,7 @@ public class SlamwareAgent {
         sTaskMoveTo = new TaskMoveTo();
         sTaskgetCompositeMap = new TaskgetCompositeMap();
         sTaskSetCompositeMap = new TaskSetCompositeMap();
+        sTaskSetHomePose=new TaskSetHomePose();
 //        sTaskCancelAction=new TaskCancelAction();
 
         mNavigationMode = NAVIGATION_MODE_FREE;
@@ -318,6 +322,10 @@ public class SlamwareAgent {
         sTaskSetCompositeMap.setCompositeMap(compositeMap);
         sTaskSetCompositeMap.setPose(pose);
         pushTaskHead(sTaskSetCompositeMap);
+    }
+    public void setHomePose( Pose pose) {
+        sTaskSetHomePose.setPose(pose);
+        pushTaskHead(sTaskSetHomePose);
     }
 
     //////////////////////////////////// Runnable //////////////////////////////////////////////////
@@ -1076,6 +1084,38 @@ public class SlamwareAgent {
         public void setCompositeMap(CompositeMap compositeMap) {
             this.compositeMap = compositeMap;
         }
+
+        public Pose getPose() {
+            return pose;
+        }
+
+        public void setPose(Pose pose) {
+            this.pose = pose;
+        }
+    }
+    private class TaskSetHomePose implements Runnable {
+
+
+        private Pose pose;
+
+        @Override
+        public void run() {
+            AbstractSlamwarePlatform platform;
+            synchronized (this) {
+                platform = mRobotPlatform;
+            }
+
+            if (platform == null) {
+                return;
+            }
+
+            try {
+                platform.setHomePose(pose);
+            } catch (Exception e) {
+                onRequestError(e);
+            }
+        }
+
 
         public Pose getPose() {
             return pose;

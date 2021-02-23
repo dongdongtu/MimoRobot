@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -114,7 +115,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     TextView textView;
     @BindView(R.id.business)
     ImageView business;
-//    @BindView(R.id.face)
+    //    @BindView(R.id.face)
 //    ImageView face;
     @BindView(R.id.temperature)
     ImageView temperature;
@@ -156,6 +157,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
 
     private Dialog showAlertDialog;
 
+    private boolean IsFirstLoad = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,8 +369,11 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(ConnectedEvent event) {
         Log.e(TAG, "mapid     = " + mapid);
-        Intent intent = new Intent("INIT_MAP");
-        sendBroadcast(intent);
+        if (IsFirstLoad) {
+            IsFirstLoad = false;
+            Intent intent = new Intent("INIT_MAP");
+            sendBroadcast(intent);
+        }
     }
 
 
@@ -490,10 +495,11 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
             @Override
             public void accept(MapListResponse mapListResponse) throws Exception {
 //                Log.e(TAG, "getMapName ="+mapListResponse.getMapList().get(0).getMapName());
-
-                SharedPreferencesManager.newInstance().setMapID(mapId);
-                SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
-                DownLoadMapService.startActionFoo(MainActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+                if (mapListResponse.getCode() == 200) {
+                    SharedPreferencesManager.newInstance().setMapID(mapId);
+                    SharedPreferencesManager.newInstance().setMapName(mapListResponse.getMapList().get(0).getMapName());
+                    DownLoadMapService.startActionFoo(MainActivity.this, mapListResponse.getMapList().get(0).getMapSourceUrl());
+                }
             }
         }, new Consumer<Throwable>() {
             @Override
@@ -541,12 +547,12 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
         waveSpeak.setVisibility(View.GONE);
     }
 
-    @OnClick({R.id.business, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2, R.id.video_3, R.id.video_4, R.id.room_detail,R.id.room_1,R.id.room_2})
+    @OnClick({R.id.business, R.id.temperature, R.id.identify, R.id.iv_more, R.id.iv_iv_mic, R.id.video_1, R.id.video_2, R.id.video_3, R.id.video_4, R.id.room_detail, R.id.room_1, R.id.room_2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.business:
                 if (!Globle.robotId.equals("-1"))
-                    ApiManager.getInstance().getRobotServer().doAction(33, 24, 1, Globle.robotId)
+                    ApiManager.getInstance().getRobotServer().doAction(45, 42, 1, Globle.robotId)
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<BaseModel>() {
                                 @Override
@@ -594,6 +600,7 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 startActivity(new Intent(MainActivity.this, IdentifyActivity.class));
                 break;
             case R.id.iv_more:
+//                stopService(new Intent(MainActivity.this, FaceInfoService.class));
                 startActivity(new Intent(MainActivity.this, MoreItemActivity.class));
                 break;
             case R.id.iv_iv_mic:
@@ -607,13 +614,13 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                 Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%911.mp4"));
                 break;
             case R.id.video_2:
-                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%912.mp4"));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%912.m4v"));
                 break;
             case R.id.video_3:
-                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%913.mp4"));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%913.m4v"));
                 break;
             case R.id.video_4:
-                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%914.mp4"));
+                Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/%E8%A7%86%E9%A2%914.m4v"));
                 break;
             case R.id.room_1:
                 Output.navigatorActivity(VideoActivity.getIntent(getTopActivity().getApplicationContext(), "http://www.qijie.mimm.co/files/shangshui/A%E6%88%B7%E5%9E%8B.mp4"));
@@ -661,8 +668,17 @@ public class MainActivity extends BaseActivity implements ActionRecycleViewAdapt
                     SharedPreferencesManager.newInstance().setMapID(-1);
                     SharedPreferencesManager.newInstance().setMapPath("");
                 } else if (SharedPreferencesManager.newInstance().getMapID() == mapid) {
-                    Log.e(TAG, SharedPreferencesManager.newInstance().getMapPath());
-                    SlamManager.getInstance().setMap(SharedPreferencesManager.newInstance().getMapPath());
+
+                    if (TextUtils.isEmpty(SharedPreferencesManager.newInstance().getMapPath())) {
+                        getMapDetail(mapid);
+                    } else {
+                        File file = new File(SharedPreferencesManager.newInstance().getMapPath());
+                        if (file.exists()) {
+                            SlamManager.getInstance().setMap(SharedPreferencesManager.newInstance().getMapPath());
+                        } else {
+                            getMapDetail(mapid);
+                        }
+                    }
                 } else {
                     Log.e(TAG, " mapid =-111");
                     getMapDetail(mapid);

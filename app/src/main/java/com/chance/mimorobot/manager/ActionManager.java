@@ -61,9 +61,9 @@ public class ActionManager {
     boolean isDoingAction = false;
 
     boolean flag = false;
-    public boolean isfinishspeak = true;
-    public boolean isfinishslam = true;
-    boolean istime = true;
+    private static boolean isfinishspeak = true;
+    private static boolean isfinishslam = true;
+    static boolean istime = true;
 
     public static ActionManager getInstance() {
         if (actionManager == null) {
@@ -109,7 +109,7 @@ public class ActionManager {
                 moveByDirection(MoveDirection.TURN_LEFT);
                 break;
             case 4://前进
-                this.isfinishslam = false;
+                isfinishslam = false;
                 cmd = actionItem;
                 Log.e(TAG, "slam mapPoint");
                 MapPoint mapPoint = new Gson().fromJson(actionItem.getParameter(), MapPoint.class);
@@ -118,12 +118,17 @@ public class ActionManager {
                     move(mapPoint, true, true);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    cancelAction();
+
                 }
                 break;
             case 5://展示图片
                 Log.e("TAG","SSSSSSS");
                 Output.navigatorActivity(ImageActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case 6://右转
                 moveByDirection(MoveDirection.TURN_RIGHT);
@@ -131,38 +136,38 @@ public class ActionManager {
             case 7://+ 左转至
                 cmd = actionItem;
                 try {
-                    this. isfinishslam = false;
+                    isfinishslam = false;
                     rotateTo((float) Math.toRadians(Double.parseDouble(actionItem.getParameter())), true);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    cancelAction();
                 }
                 break;
             case 8://+ 左转
-                this.isfinishslam = false;
+                isfinishslam = false;
                 cmd = actionItem;
                 rotate(Integer.parseInt(actionItem.getParameter()));
                 break;
             case 9://-
                 try {
                     cmd = actionItem;
-                    this.isfinishslam = false;
+                    isfinishslam = false;
                     rotateTo(-(float) Math.toRadians(Double.parseDouble(actionItem.getParameter())), true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
             case 10://-
-                this. isfinishslam = false;
+                isfinishslam = false;
                 cmd = actionItem;
                 rotate(-Integer.parseInt(actionItem.getParameter()));
                 break;
             case 11://说话
+                isfinishspeak = false;
                 Log.e(TAG, "说话");
-                this.isfinishspeak = false;
                 vocalSpeakInterface.activateSpeakCallback(actionItem.getParameter(), new Runnable() {
                     @Override
                     public void run() {
+                        Log.e(TAG, "说话完毕");
                         isfinishspeak = true;
                         checkFinish();
                     }
@@ -170,9 +175,19 @@ public class ActionManager {
                 break;
             case 12://表情变化
                 serialControlManager.setFace(Integer.parseInt(actionItem.getParameter()));
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case 13://展示网页
                 Output.navigatorActivity(WebActivity.getIntent(getTopActivity().getApplicationContext(), actionItem.getParameter()));
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 break;
             case 14://抬左手
                 SerialControlManager.newInstance().armLeftTurnUp(50);
@@ -223,6 +238,7 @@ public class ActionManager {
                 SerialControlManager.newInstance().armRightTurnDown(50);
                 break;
         }
+
         checkFinish();
     }
 
@@ -304,15 +320,14 @@ public class ActionManager {
         }
     }
 
-
     public void checkFinish() {
-        if (this.isfinishslam && this.isfinishspeak&&this.istime) {
+        Log.e("isfinishspeak","isfinishspeak = "+isfinishspeak);
+        if (isfinishslam && isfinishspeak&&istime) {
             if (nextActionLists.size() > 0) {
                 Log.e(TAG, "checkFinish  " + this.nextActionLists.size());
                 doActionList(this.nextActionLists.remove(0));
             } else {
                 Log.e(TAG, "checkFinish  finish");
-
                 isDoingAction = false;
 //                Intent intent=new Intent("ACTION_STOP");
 //                ActivityUtils.getTopActivity().sendBroadcast(intent);

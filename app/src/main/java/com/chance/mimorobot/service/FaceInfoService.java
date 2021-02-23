@@ -336,12 +336,16 @@ public class FaceInfoService extends Service  implements ViewTreeObserver.OnGlob
      * @param
      */
     private void trackFaceMove(Camera camera, FacePreviewInfo facePreviewInfo) {
-        float centerX = (float) facePreviewInfo.getFaceInfo().getRect().centerX() / (float) camera.getParameters().getPreviewSize().width;
-        float centerY = (float) facePreviewInfo.getFaceInfo().getRect().centerY() / (float) camera.getParameters().getPreviewSize().height;
-        float width = (float) facePreviewInfo.getFaceInfo().getRect().width() / (float) camera.getParameters().getPreviewSize().width;
-        vx = FaceTrackSpeedParse.getVx(centerX);
-        vy = FaceTrackSpeedParse.getVy(centerY);
-        float vz = FaceTrackSpeedParse.getVz(width);
+        try {
+            float centerX = (float) facePreviewInfo.getFaceInfo().getRect().centerX() / (float) camera.getParameters().getPreviewSize().width;
+            float centerY = (float) facePreviewInfo.getFaceInfo().getRect().centerY() / (float) camera.getParameters().getPreviewSize().height;
+            float width = (float) facePreviewInfo.getFaceInfo().getRect().width() / (float) camera.getParameters().getPreviewSize().width;
+            vx = FaceTrackSpeedParse.getVx(centerX);
+            vy = FaceTrackSpeedParse.getVy(centerY);
+            float vz = FaceTrackSpeedParse.getVz(width);
+        }catch (Exception e){
+
+        }
 //        Log.e("CameraFragment", "vx=" + vx + ",vy=" + vy);
 //        cameraPresenter.trackFaceMove(vx, vy);
     }
